@@ -6,6 +6,12 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 
 
+/**
+ * @property string $password
+ *
+ * @method static where(string $string, string $email)
+ * @method static create(array $data)
+ */
 class User extends Authenticatable
 {
 
