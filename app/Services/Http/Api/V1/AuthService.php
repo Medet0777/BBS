@@ -20,6 +20,7 @@ use App\Http\Resources\Api\V1\Auth\UserResource;
 use App\Traits\Services\Http\Api\V1\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
+use App\Mail\OtpCodeMail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 
@@ -60,9 +61,7 @@ class AuthService implements AuthServiceContract
             'otp_expires_at' => Carbon::now()->addMinutes(5),
         ]);
 
-        Mail::raw("Your verification code: $otpCode", function ($message) use ($dto) {
-            $message->to($dto->email)->subject('BarberHub Verification Code');
-        });
+        Mail::to($dto->email)->send(new OtpCodeMail($otpCode));
 
         return $this->success(null, 'Verification code sent to email');
     }
@@ -173,9 +172,7 @@ class AuthService implements AuthServiceContract
             'otp_expires_at' => Carbon::now()->addMinutes(5),
         ]);
 
-        Mail::raw("Your verification code: $otpCode", function ($message) use ($dto) {
-            $message->to($dto->email)->subject('BarberHub Verification Code');
-        });
+        Mail::to($dto->email)->send(new OtpCodeMail($otpCode));
 
         return $this->success(null, 'Verification code resent');
     }
