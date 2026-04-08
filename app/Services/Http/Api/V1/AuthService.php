@@ -23,6 +23,7 @@ use Illuminate\Support\Carbon;
 use App\Mail\OtpCodeMail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Google_Client;
 
 class AuthService implements AuthServiceContract
 {
@@ -124,9 +125,21 @@ class AuthService implements AuthServiceContract
     {
         $dto = GoogleLoginDto::from($request->validated());
 
-        // TODO: Google id_token verification via Google API
+        $googleClient = new Google_Client(['client_id' => config('services.google.client_id')]);
+        $payload      = $googleClient->verifyIdToken($dto->id_token);
 
-        return $this->error('Google Login is not implemented yet', 'not_implemented', 501);
+        if (!$payload) {
+            return $this->error('Invalid Google token', 'invalid_google_token', 401);
+        }
+
+        $user = $this->userRepository->findOrCreateByGoogle(
+            $payload['email'],
+            $payload['name'] ?? $payload['email'],
+        );
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return $this->success(new TokenResource($user, $token), 'Login successful');
     }
 
     /**

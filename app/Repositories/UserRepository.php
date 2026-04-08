@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Contracts\Repositories\UserRepositoryContract;
 use App\Models\User;
+use Illuminate\Support\Carbon;
 
 class UserRepository implements UserRepositoryContract
 {
@@ -26,6 +27,23 @@ class UserRepository implements UserRepositoryContract
     public function create(array $data): User
     {
         return User::create($data);
+    }
+
+    /**
+     * @param string $email
+     * @param string $name
+     *
+     * @return User
+     */
+    public function findOrCreateByGoogle(string $email, string $name): User
+    {
+        return User::firstOrCreate(
+            ['email' => $email],
+            [
+                'name'              => $name,
+                'email_verified_at' => Carbon::now(),
+            ],
+        );
     }
 
     /**

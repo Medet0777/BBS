@@ -22,6 +22,14 @@ interface UserRepositoryContract
     public function create(array $data): User;
 
     /**
+     * @param string  $email
+     * @param string  $name
+     *
+     * @return User
+     */
+    public function findOrCreateByGoogle(string $email, string $name): User;
+
+    /**
      * @param User $user
      *
      * @return void

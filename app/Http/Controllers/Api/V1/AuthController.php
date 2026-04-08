@@ -216,12 +216,12 @@ class AuthController extends Controller
                 ])
             ),
             new OA\Response(
-                response: 501,
-                description: 'Not implemented',
+                response: 401,
+                description: 'Invalid Google token',
                 content: new OA\JsonContent(properties: [
                     new OA\Property(property: 'success', type: 'boolean', example: false),
-                    new OA\Property(property: 'message', type: 'string', example: 'Google Login is not implemented yet'),
-                    new OA\Property(property: 'error', type: 'string', example: 'not_implemented'),
+                    new OA\Property(property: 'message', type: 'string', example: 'Invalid Google token'),
+                    new OA\Property(property: 'error', type: 'string', example: 'invalid_google_token'),
                 ])
             ),
         ]
