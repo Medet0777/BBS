@@ -1,0 +1,32 @@
+<?php
+
+namespace App\Http\Resources\Api\V1\Service;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+/**
+ * @property int    $id
+ * @property string $name
+ * @property float  $price
+ * @property int    $duration_minutes
+ */
+class ServiceResource extends JsonResource
+{
+
+    /**
+     * @param Request $request
+     *
+     * @return array
+     */
+    public function toArray(Request $request): array
+    {
+        return [
+            'id'               => $this->id,
+            'name'             => $this->name,
+            'category'         => $this->serviceCategory?->name,
+            'price'            => $this->price,
+            'duration_minutes' => $this->duration_minutes,
+        ];
+    }
+}
