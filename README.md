@@ -1,58 +1,130 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# BBS - Barbershop Booking System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Backend for a barbershop booking app. Built with Laravel.
 
-## About Laravel
+## What it does
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Lets users find barbershops, see their services, and (later) book a time slot.
+Shop owners get an admin panel to manage their shops.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+The problem: small barbershops usually take orders by phone or Instagram DMs. There is no normal way to see free slots or compare shops. BBS is the backend that solves this.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Features
 
-## Learning Laravel
+Done:
+- Register / login with email + password
+- Email verification with 6-digit code
+- Google login (basic version)
+- Sanctum tokens for auth
+- List barbershops, view single barbershop
+- Admin panel (Backpack) for managing shops, services, categories, users
+- Swagger API docs
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Planned:
+- Booking endpoints
+- Working hours and free slots
+- Reviews
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Tech stack
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+- Laravel 13
+- PHP 8.3
+- MySQL 8
+- Laravel Sanctum (auth)
+- Backpack (admin panel)
+- L5-Swagger (API docs)
+- Repository + Service pattern
 
-## Agentic Development
+## Project structure
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+Standard Laravel structure:
 
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+```
+BBS/
+├── app/             # main code: Models, Http, Services, Repositories, Dto, Contracts
+├── database/        # migrations, seeders, factories
+├── docs/            # extra documentation
+├── resources/       # views, css, js
+├── routes/          # api/v1, web, backpack
+├── tests/           # Feature + Unit
+├── README.md
+├── LICENSE
+└── AUDIT.md
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+## Installation
 
-## Contributing
+Requirements: PHP 8.3, Composer, MySQL, Node.js 20+
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+git clone https://github.com/Medet0777/BBS.git
+cd BBS
 
-## Code of Conduct
+composer install
+npm install
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+cp .env.example .env
+php artisan key:generate
+```
 
-## Security Vulnerabilities
+Open `.env` and set DB credentials and SMTP (Gmail works fine in dev).
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+php artisan migrate --seed
+php artisan l5-swagger:generate
+php artisan serve
+```
+
+In another terminal:
+```bash
+npm run dev
+```
+
+## Usage
+
+Swagger docs: `http://localhost:8000/api/documentation`
+
+Admin panel: `http://localhost:8000/admin`
+
+Quick test:
+```bash
+curl http://localhost:8000/api/v1/barbershops
+```
+
+Register a user:
+```bash
+curl -X POST http://localhost:8000/api/v1/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"name":"John","email":"u@example.com","password":"secret123","password_confirmation":"secret123"}'
+```
+
+## API endpoints (v1)
+
+Auth:
+- POST `/api/v1/auth/register`
+- POST `/api/v1/auth/verify-email`
+- POST `/api/v1/auth/resend-code`
+- POST `/api/v1/auth/login`
+- POST `/api/v1/auth/google`
+- POST `/api/v1/auth/logout` (auth)
+- GET  `/api/v1/auth/me` (auth)
+
+Barbershops:
+- GET `/api/v1/barbershops`
+- GET `/api/v1/barbershops/{slug}`
+
+Full request and response schemas are in Swagger.
+
+## Tests
+
+```bash
+php artisan test
+```
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT. See LICENSE.
+
+## Author
+
+Medet Muratbek, SDU University
