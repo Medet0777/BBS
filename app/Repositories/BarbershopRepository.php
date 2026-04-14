@@ -65,7 +65,10 @@ class BarbershopRepository implements BarbershopRepositoryContract
     {
         return Barbershop::where('slug', $slug)
             ->where('is_active', true)
-            ->with('services.serviceCategory')
+            ->with([
+                'services.serviceCategory',
+                'barbers' => fn ($query) => $query->where('is_active', true),
+            ])
             ->first();
     }
 }

@@ -107,12 +107,23 @@ class BarbershopController extends Controller
                         new OA\Property(property: 'opens_at', type: 'string', example: '09:00'),
                         new OA\Property(property: 'closes_at', type: 'string', example: '21:00'),
                         new OA\Property(property: 'status', type: 'string', enum: ['open', 'closed'], example: 'open'),
-                        new OA\Property(property: 'services', type: 'array', items: new OA\Items(properties: [
+                        new OA\Property(property: 'barbers', type: 'array', items: new OA\Items(properties: [
                             new OA\Property(property: 'id', type: 'integer', example: 1),
-                            new OA\Property(property: 'name', type: 'string', example: 'Классическая стрижка'),
-                            new OA\Property(property: 'category', type: 'string', example: 'Стрижки'),
-                            new OA\Property(property: 'price', type: 'number', format: 'float', example: 1500),
-                            new OA\Property(property: 'duration_minutes', type: 'integer', example: 30),
+                            new OA\Property(property: 'name', type: 'string', example: 'Alikhan Satybaldy'),
+                            new OA\Property(property: 'avatar', type: 'string', nullable: true),
+                            new OA\Property(property: 'specialization', type: 'string', nullable: true, example: 'Классические стрижки'),
+                            new OA\Property(property: 'rating', type: 'number', format: 'float', example: 4.8),
+                            new OA\Property(property: 'experience_years', type: 'integer', example: 5),
+                        ])),
+                        new OA\Property(property: 'services', type: 'array', items: new OA\Items(properties: [
+                            new OA\Property(property: 'category_id', type: 'integer', example: 1),
+                            new OA\Property(property: 'category_name', type: 'string', example: 'Стрижки'),
+                            new OA\Property(property: 'items', type: 'array', items: new OA\Items(properties: [
+                                new OA\Property(property: 'id', type: 'integer', example: 1),
+                                new OA\Property(property: 'name', type: 'string', example: 'Классическая стрижка'),
+                                new OA\Property(property: 'price', type: 'number', format: 'float', example: 1500),
+                                new OA\Property(property: 'duration_minutes', type: 'integer', example: 30),
+                            ])),
                         ])),
                     ], type: 'object'),
                 ])

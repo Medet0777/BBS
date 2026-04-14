@@ -2,7 +2,8 @@
 
 namespace App\Http\Resources\Api\V1\Barbershop;
 
-use App\Http\Resources\Api\V1\Service\ServiceResource;
+use App\Http\Resources\Api\V1\Barber\BarberResource;
+use App\Http\Resources\Api\V1\Service\ServiceItemResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Carbon;
@@ -34,6 +35,15 @@ class ShowResource extends JsonResource
         $currentTime = Carbon::now()->format('H:i');
         $isOpen      = $this->opens_at <= $currentTime && $this->closes_at >= $currentTime;
 
+        $groupedServices = $this->services
+            ->groupBy('service_category_id')
+            ->map(fn ($services) => [
+                'category_id'   => $services->first()->service_category_id,
+                'category_name' => $services->first()->serviceCategory?->name,
+                'items'         => ServiceItemResource::collection($services),
+            ])
+            ->values();
+
         return [
             'id'          => $this->id,
             'name'        => $this->name,
@@ -48,7 +58,8 @@ class ShowResource extends JsonResource
             'opens_at'    => $this->opens_at,
             'closes_at'   => $this->closes_at,
             'status'      => $isOpen ? 'open' : 'closed',
-            'services'    => ServiceResource::collection($this->services),
+            'barbers'     => BarberResource::collection($this->barbers),
+            'services'    => $groupedServices,
         ];
     }
 }

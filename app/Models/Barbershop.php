@@ -53,4 +53,12 @@ class Barbershop extends Model
     {
         return $this->hasMany(Service::class);
     }
+
+    /**
+     * @return HasMany
+     */
+    public function barbers(): HasMany
+    {
+        return $this->hasMany(Barber::class);
+    }
 }

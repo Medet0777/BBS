@@ -13,4 +13,5 @@ Route::group([
     Route::crud('barbershop', 'BarbershopCrudController');
     Route::crud('service-category', 'ServiceCategoryCrudController');
     Route::crud('service', 'ServiceCrudController');
+    Route::crud('barber', 'BarberCrudController');
 });

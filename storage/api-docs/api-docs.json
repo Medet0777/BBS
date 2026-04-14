@@ -956,7 +956,7 @@
                                                         "closed"
                                                     ]
                                                 },
-                                                "services": {
+                                                "barbers": {
                                                     "type": "array",
                                                     "items": {
                                                         "properties": {
@@ -966,20 +966,66 @@
                                                             },
                                                             "name": {
                                                                 "type": "string",
-                                                                "example": "Классическая стрижка"
+                                                                "example": "Alikhan Satybaldy"
                                                             },
-                                                            "category": {
+                                                            "avatar": {
+                                                                "type": "string",
+                                                                "nullable": true
+                                                            },
+                                                            "specialization": {
+                                                                "type": "string",
+                                                                "example": "Классические стрижки",
+                                                                "nullable": true
+                                                            },
+                                                            "rating": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 4.8
+                                                            },
+                                                            "experience_years": {
+                                                                "type": "integer",
+                                                                "example": 5
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "services": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "category_id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "category_name": {
                                                                 "type": "string",
                                                                 "example": "Стрижки"
                                                             },
-                                                            "price": {
-                                                                "type": "number",
-                                                                "format": "float",
-                                                                "example": 1500
-                                                            },
-                                                            "duration_minutes": {
-                                                                "type": "integer",
-                                                                "example": 30
+                                                            "items": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "id": {
+                                                                            "type": "integer",
+                                                                            "example": 1
+                                                                        },
+                                                                        "name": {
+                                                                            "type": "string",
+                                                                            "example": "Классическая стрижка"
+                                                                        },
+                                                                        "price": {
+                                                                            "type": "number",
+                                                                            "format": "float",
+                                                                            "example": 1500
+                                                                        },
+                                                                        "duration_minutes": {
+                                                                            "type": "integer",
+                                                                            "example": 30
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                }
                                                             }
                                                         },
                                                         "type": "object"
