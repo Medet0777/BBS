@@ -420,8 +420,8 @@
                             }
                         }
                     },
-                    "501": {
-                        "description": "Not implemented",
+                    "401": {
+                        "description": "Invalid Google token",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -432,11 +432,11 @@
                                         },
                                         "message": {
                                             "type": "string",
-                                            "example": "Google Login is not implemented yet"
+                                            "example": "Invalid Google token"
                                         },
                                         "error": {
                                             "type": "string",
-                                            "example": "not_implemented"
+                                            "example": "invalid_google_token"
                                         }
                                     },
                                     "type": "object"
@@ -669,6 +669,357 @@
                     }
                 }
             }
+        },
+        "/barbershops": {
+            "get": {
+                "tags": [
+                    "Barbershop"
+                ],
+                "summary": "List all barbershops",
+                "description": "Returns paginated list of active barbershops. Supports search by name, filter by open status, sort by rating or distance (requires user coordinates).",
+                "operationId": "barbershopList",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search by barbershop name",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "is_open",
+                        "in": "query",
+                        "description": "Filter barbershops currently open",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "order_by",
+                        "in": "query",
+                        "description": "Sort order",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "rating",
+                                "distance"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "user_lat",
+                        "in": "query",
+                        "description": "User latitude (required for distance calculation)",
+                        "required": false,
+                        "schema": {
+                            "type": "number",
+                            "format": "float",
+                            "example": 43.238949
+                        }
+                    },
+                    {
+                        "name": "user_lng",
+                        "in": "query",
+                        "description": "User longitude (required for distance calculation)",
+                        "required": false,
+                        "schema": {
+                            "type": "number",
+                            "format": "float",
+                            "example": 76.889709
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of barbershops",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "BarbershopKZ"
+                                                            },
+                                                            "slug": {
+                                                                "type": "string",
+                                                                "example": "barbershop-kz"
+                                                            },
+                                                            "logo": {
+                                                                "type": "string",
+                                                                "nullable": true
+                                                            },
+                                                            "address": {
+                                                                "type": "string",
+                                                                "example": "ул. Абая 14"
+                                                            },
+                                                            "rating": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 4.9
+                                                            },
+                                                            "opens_at": {
+                                                                "type": "string",
+                                                                "example": "09:00"
+                                                            },
+                                                            "closes_at": {
+                                                                "type": "string",
+                                                                "example": "21:00"
+                                                            },
+                                                            "status": {
+                                                                "type": "string",
+                                                                "example": "open",
+                                                                "enum": [
+                                                                    "open",
+                                                                    "closed"
+                                                                ]
+                                                            },
+                                                            "distance_km": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 0.4,
+                                                                "nullable": true
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "example": 3
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 24
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string"
+                                        },
+                                        "errors": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/barbershops/{slug}": {
+            "get": {
+                "tags": [
+                    "Barbershop"
+                ],
+                "summary": "Show barbershop by slug",
+                "description": "Returns barbershop details with services grouped by category",
+                "operationId": "barbershopShow",
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "barbershop-kz"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Barbershop details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "BarbershopKZ"
+                                                },
+                                                "slug": {
+                                                    "type": "string",
+                                                    "example": "barbershop-kz"
+                                                },
+                                                "description": {
+                                                    "type": "string",
+                                                    "nullable": true
+                                                },
+                                                "logo": {
+                                                    "type": "string",
+                                                    "nullable": true
+                                                },
+                                                "phone": {
+                                                    "type": "string",
+                                                    "example": "+77001234567"
+                                                },
+                                                "address": {
+                                                    "type": "string",
+                                                    "example": "ул. Абая 14"
+                                                },
+                                                "latitude": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 43.238949
+                                                },
+                                                "longitude": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 76.889709
+                                                },
+                                                "rating": {
+                                                    "type": "number",
+                                                    "format": "float",
+                                                    "example": 4.9
+                                                },
+                                                "opens_at": {
+                                                    "type": "string",
+                                                    "example": "09:00"
+                                                },
+                                                "closes_at": {
+                                                    "type": "string",
+                                                    "example": "21:00"
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "open",
+                                                    "enum": [
+                                                        "open",
+                                                        "closed"
+                                                    ]
+                                                },
+                                                "services": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "Классическая стрижка"
+                                                            },
+                                                            "category": {
+                                                                "type": "string",
+                                                                "example": "Стрижки"
+                                                            },
+                                                            "price": {
+                                                                "type": "number",
+                                                                "format": "float",
+                                                                "example": 1500
+                                                            },
+                                                            "duration_minutes": {
+                                                                "type": "integer",
+                                                                "example": 30
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Barbershop not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Barbershop not found"
+                                        },
+                                        "error": {
+                                            "type": "string",
+                                            "example": "not_found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -684,6 +1035,10 @@
         {
             "name": "Auth",
             "description": "Auth"
+        },
+        {
+            "name": "Barbershop",
+            "description": "Barbershop"
         }
     ]
 }

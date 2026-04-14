@@ -2,15 +2,18 @@
 
 namespace App\Contracts\Services\Http\Api\V1;
 
+use App\Http\Requests\Api\V1\Barbershop\ListRequest;
 use Illuminate\Http\JsonResponse;
 
 interface BarbershopServiceContract
 {
 
     /**
+     * @param ListRequest $request
+     *
      * @return JsonResponse
      */
-    public function list(): JsonResponse;
+    public function list(ListRequest $request): JsonResponse;
 
     /**
      * @param string $slug

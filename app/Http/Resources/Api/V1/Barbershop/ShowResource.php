@@ -5,6 +5,7 @@ namespace App\Http\Resources\Api\V1\Barbershop;
 use App\Http\Resources\Api\V1\Service\ServiceResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Carbon;
 
 /**
  * @property int    $id
@@ -30,6 +31,9 @@ class ShowResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $currentTime = Carbon::now()->format('H:i');
+        $isOpen      = $this->opens_at <= $currentTime && $this->closes_at >= $currentTime;
+
         return [
             'id'          => $this->id,
             'name'        => $this->name,
@@ -43,6 +47,7 @@ class ShowResource extends JsonResource
             'rating'      => $this->rating,
             'opens_at'    => $this->opens_at,
             'closes_at'   => $this->closes_at,
+            'status'      => $isOpen ? 'open' : 'closed',
             'services'    => ServiceResource::collection($this->services),
         ];
     }
