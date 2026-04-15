@@ -28,7 +28,9 @@ class BarbershopRepository implements BarbershopRepositoryContract
         bool $onlyOpen = false,
         ?string $search = null,
     ): LengthAwarePaginator {
-        $query = Barbershop::where('is_active', true);
+        $query = Barbershop::where('is_active', true)
+            ->withAvg('reviews as avg_rating', 'rating')
+            ->withCount('reviews');
 
         if ($userLat !== null && $userLng !== null) {
             $haversine = '(6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude))))';
@@ -65,9 +67,12 @@ class BarbershopRepository implements BarbershopRepositoryContract
     {
         return Barbershop::where('slug', $slug)
             ->where('is_active', true)
+            ->withAvg('reviews as avg_rating', 'rating')
+            ->withCount('reviews')
             ->with([
                 'services.serviceCategory',
                 'barbers' => fn ($query) => $query->where('is_active', true),
+                'reviews' => fn ($query) => $query->with('user')->latest()->limit(20),
             ])
             ->first();
     }

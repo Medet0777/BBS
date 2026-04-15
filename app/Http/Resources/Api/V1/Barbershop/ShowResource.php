@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Api\V1\Barbershop;
 
 use App\Http\Resources\Api\V1\Barber\BarberResource;
+use App\Http\Resources\Api\V1\Review\ReviewResource;
 use App\Http\Resources\Api\V1\Service\ServiceItemResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -45,21 +46,23 @@ class ShowResource extends JsonResource
             ->values();
 
         return [
-            'id'          => $this->id,
-            'name'        => $this->name,
-            'slug'        => $this->slug,
-            'description' => $this->description,
-            'logo'        => $this->logo,
-            'phone'       => $this->phone,
-            'address'     => $this->address,
-            'latitude'    => $this->latitude,
-            'longitude'   => $this->longitude,
-            'rating'      => $this->rating,
-            'opens_at'    => $this->opens_at,
-            'closes_at'   => $this->closes_at,
-            'status'      => $isOpen ? 'open' : 'closed',
-            'barbers'     => BarberResource::collection($this->barbers),
-            'services'    => $groupedServices,
+            'id'            => $this->id,
+            'name'          => $this->name,
+            'slug'          => $this->slug,
+            'description'   => $this->description,
+            'logo'          => $this->logo,
+            'phone'         => $this->phone,
+            'address'       => $this->address,
+            'latitude'      => $this->latitude,
+            'longitude'     => $this->longitude,
+            'rating'        => $this->avg_rating !== null ? round((float) $this->avg_rating, 1) : 0,
+            'reviews_count' => (int) $this->reviews_count,
+            'opens_at'      => $this->opens_at,
+            'closes_at'     => $this->closes_at,
+            'status'        => $isOpen ? 'open' : 'closed',
+            'barbers'       => BarberResource::collection($this->barbers),
+            'services'      => $groupedServices,
+            'reviews'       => ReviewResource::collection($this->reviews),
         ];
     }
 }

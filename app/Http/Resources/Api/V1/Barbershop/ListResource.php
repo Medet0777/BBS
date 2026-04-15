@@ -31,16 +31,17 @@ class ListResource extends JsonResource
         $isOpen      = $this->opens_at <= $currentTime && $this->closes_at >= $currentTime;
 
         return [
-            'id'          => $this->id,
-            'name'        => $this->name,
-            'slug'        => $this->slug,
-            'logo'        => $this->logo,
-            'address'     => $this->address,
-            'rating'      => $this->rating,
-            'opens_at'    => $this->opens_at,
-            'closes_at'   => $this->closes_at,
-            'status'      => $isOpen ? 'open' : 'closed',
-            'distance_km' => isset($this->distance_km) ? round((float) $this->distance_km, 2) : null,
+            'id'            => $this->id,
+            'name'          => $this->name,
+            'slug'          => $this->slug,
+            'logo'          => $this->logo,
+            'address'       => $this->address,
+            'rating'        => $this->avg_rating !== null ? round((float) $this->avg_rating, 1) : 0,
+            'reviews_count' => (int) $this->reviews_count,
+            'opens_at'      => $this->opens_at,
+            'closes_at'     => $this->closes_at,
+            'status'        => $isOpen ? 'open' : 'closed',
+            'distance_km'   => isset($this->distance_km) ? round((float) $this->distance_km, 2) : null,
         ];
     }
 }

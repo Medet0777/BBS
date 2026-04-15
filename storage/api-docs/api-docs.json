@@ -793,6 +793,10 @@
                                                                 "format": "float",
                                                                 "example": 4.9
                                                             },
+                                                            "reviews_count": {
+                                                                "type": "integer",
+                                                                "example": 312
+                                                            },
                                                             "opens_at": {
                                                                 "type": "string",
                                                                 "example": "09:00"
@@ -940,6 +944,10 @@
                                                     "format": "float",
                                                     "example": 4.9
                                                 },
+                                                "reviews_count": {
+                                                    "type": "integer",
+                                                    "example": 312
+                                                },
                                                 "opens_at": {
                                                     "type": "string",
                                                     "example": "09:00"
@@ -955,6 +963,31 @@
                                                         "open",
                                                         "closed"
                                                     ]
+                                                },
+                                                "reviews": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer"
+                                                            },
+                                                            "user_name": {
+                                                                "type": "string"
+                                                            },
+                                                            "rating": {
+                                                                "type": "integer"
+                                                            },
+                                                            "comment": {
+                                                                "type": "string",
+                                                                "nullable": true
+                                                            },
+                                                            "created_at": {
+                                                                "type": "string",
+                                                                "format": "date-time"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
                                                 },
                                                 "barbers": {
                                                     "type": "array",
@@ -1066,6 +1099,110 @@
                     }
                 }
             }
+        },
+        "/barbershops/{slug}/reviews": {
+            "post": {
+                "tags": [
+                    "Review"
+                ],
+                "summary": "Leave a review",
+                "description": "Creates a new review for the barbershop",
+                "operationId": "reviewCreate",
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "rating"
+                                ],
+                                "properties": {
+                                    "rating": {
+                                        "type": "integer",
+                                        "example": 5,
+                                        "maximum": 5,
+                                        "minimum": 1
+                                    },
+                                    "comment": {
+                                        "type": "string",
+                                        "example": "Очень понравилось!",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Review created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Review created"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer"
+                                                },
+                                                "user_name": {
+                                                    "type": "string"
+                                                },
+                                                "rating": {
+                                                    "type": "integer"
+                                                },
+                                                "comment": {
+                                                    "type": "string",
+                                                    "nullable": true
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Barbershop not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -1085,6 +1222,10 @@
         {
             "name": "Barbershop",
             "description": "Barbershop"
+        },
+        {
+            "name": "Review",
+            "description": "Review"
         }
     ]
 }
