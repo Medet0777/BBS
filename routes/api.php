@@ -6,4 +6,5 @@ Route::prefix('v1')->group(function () {
     require base_path('routes/api/v1/auth.php');
     require base_path('routes/api/v1/barbershop.php');
     require base_path('routes/api/v1/booking.php');
+    require base_path('routes/api/v1/owner.php');
 });

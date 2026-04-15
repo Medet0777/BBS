@@ -83,6 +83,15 @@ class BarbershopCrudController extends CrudController
 
         $this->crud->addFields([
             [
+                'name'        => 'owner_id',
+                'type'        => 'select',
+                'label'       => 'Owner (User)',
+                'entity'      => 'owner',
+                'model'       => 'App\Models\User',
+                'attribute'   => 'email',
+                'allows_null' => true,
+            ],
+            [
                 'name'  => 'name',
                 'type'  => 'text',
                 'label' => 'Name',

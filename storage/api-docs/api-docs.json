@@ -1482,6 +1482,145 @@
                 ]
             }
         },
+        "/owner/dashboard": {
+            "get": {
+                "tags": [
+                    "Owner"
+                ],
+                "summary": "Owner dashboard",
+                "description": "Returns barbershop owner dashboard with aggregated metrics for the authenticated user`s barbershop.",
+                "operationId": "ownerDashboard",
+                "responses": {
+                    "200": {
+                        "description": "Dashboard data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "barbershop": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer"
+                                                        },
+                                                        "name": {
+                                                            "type": "string"
+                                                        },
+                                                        "rating": {
+                                                            "type": "number",
+                                                            "format": "float"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "today_bookings": {
+                                                    "properties": {
+                                                        "count": {
+                                                            "type": "integer",
+                                                            "example": 7
+                                                        },
+                                                        "delta_vs_yesterday": {
+                                                            "type": "integer",
+                                                            "example": 3
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "week_revenue": {
+                                                    "properties": {
+                                                        "amount": {
+                                                            "type": "number",
+                                                            "format": "float",
+                                                            "example": 85000
+                                                        },
+                                                        "delta_pct_vs_prev": {
+                                                            "type": "number",
+                                                            "format": "float",
+                                                            "example": 12.5,
+                                                            "nullable": true
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "new_clients_this_week": {
+                                                    "type": "integer",
+                                                    "example": 4
+                                                },
+                                                "revenue_last_7_days": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "date": {
+                                                                "type": "string",
+                                                                "format": "date"
+                                                            },
+                                                            "revenue": {
+                                                                "type": "number",
+                                                                "format": "float"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "nearest_bookings": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer"
+                                                            },
+                                                            "client_name": {
+                                                                "type": "string"
+                                                            },
+                                                            "barber_name": {
+                                                                "type": "string"
+                                                            },
+                                                            "scheduled_at": {
+                                                                "type": "string",
+                                                                "format": "date-time"
+                                                            },
+                                                            "services_count": {
+                                                                "type": "integer"
+                                                            },
+                                                            "total_price": {
+                                                                "type": "number",
+                                                                "format": "float"
+                                                            },
+                                                            "status": {
+                                                                "type": "string"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "User is not a barbershop owner"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/barbershops/{slug}/reviews": {
             "post": {
                 "tags": [
@@ -1608,6 +1747,10 @@
         {
             "name": "Booking",
             "description": "Booking"
+        },
+        {
+            "name": "Owner",
+            "description": "Owner"
         },
         {
             "name": "Review",
