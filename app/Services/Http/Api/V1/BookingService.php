@@ -7,6 +7,7 @@ use App\Contracts\Services\Http\Api\V1\BookingServiceContract;
 use App\Enums\BookingStatus;
 use App\Http\Requests\Api\V1\Booking\CreateRequest;
 use App\Http\Requests\Api\V1\Booking\ListRequest;
+use App\Http\Requests\Api\V1\Booking\RescheduleRequest;
 use App\Http\Resources\Api\V1\Booking\CreateResource;
 use App\Http\Resources\Api\V1\Booking\ListResource;
 use App\Models\Barber;
@@ -101,5 +102,52 @@ class BookingService implements BookingServiceContract
         $bookings = $this->bookingRepository->getUserBookings(auth()->id(), $filter, $perPage);
 
         return $this->success(ListResource::collection($bookings)->response()->getData(true));
+    }
+
+    /**
+     * @param int $id
+     *
+     * @return JsonResponse
+     */
+    public function cancel(int $id): JsonResponse
+    {
+        $booking = $this->bookingRepository->findForUser($id, auth()->id());
+
+        if (!$booking) {
+            return $this->error('Booking not found', 'not_found', 404);
+        }
+
+        if (in_array($booking->status, [BookingStatus::Cancelled, BookingStatus::Completed], true)) {
+            return $this->error('Booking can no longer be cancelled', 'invalid_status', 422);
+        }
+
+        $this->bookingRepository->update($booking, ['status' => BookingStatus::Cancelled->value]);
+
+        return $this->success(null, 'Booking cancelled');
+    }
+
+    /**
+     * @param int               $id
+     * @param RescheduleRequest $request
+     *
+     * @return JsonResponse
+     */
+    public function reschedule(int $id, RescheduleRequest $request): JsonResponse
+    {
+        $booking = $this->bookingRepository->findForUser($id, auth()->id());
+
+        if (!$booking) {
+            return $this->error('Booking not found', 'not_found', 404);
+        }
+
+        if (in_array($booking->status, [BookingStatus::Cancelled, BookingStatus::Completed], true)) {
+            return $this->error('Booking can no longer be rescheduled', 'invalid_status', 422);
+        }
+
+        $booking = $this->bookingRepository->update($booking, [
+            'scheduled_at' => $request->input('scheduled_at'),
+        ]);
+
+        return $this->success(new CreateResource($booking), 'Booking rescheduled');
     }
 }

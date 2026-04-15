@@ -67,4 +67,31 @@ class BookingRepository implements BookingRepositoryContract
 
         return $query->paginate($perPage);
     }
+
+    /**
+     * @param int $id
+     * @param int $userId
+     *
+     * @return Booking|null
+     */
+    public function findForUser(int $id, int $userId): ?Booking
+    {
+        return Booking::where('id', $id)
+            ->where('user_id', $userId)
+            ->with(['barbershop', 'barber', 'services'])
+            ->first();
+    }
+
+    /**
+     * @param Booking $booking
+     * @param array   $data
+     *
+     * @return Booking
+     */
+    public function update(Booking $booking, array $data): Booking
+    {
+        $booking->update($data);
+
+        return $booking->fresh(['barbershop', 'barber', 'services']);
+    }
 }

@@ -1390,6 +1390,98 @@
                 ]
             }
         },
+        "/bookings/{id}/cancel": {
+            "post": {
+                "tags": [
+                    "Booking"
+                ],
+                "summary": "Cancel booking",
+                "description": "Cancels a pending or confirmed booking",
+                "operationId": "bookingCancel",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Booking cancelled"
+                    },
+                    "404": {
+                        "description": "Booking not found"
+                    },
+                    "422": {
+                        "description": "Invalid status"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/bookings/{id}/reschedule": {
+            "post": {
+                "tags": [
+                    "Booking"
+                ],
+                "summary": "Reschedule booking",
+                "description": "Reschedules a pending or confirmed booking to a new datetime",
+                "operationId": "bookingReschedule",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "scheduled_at"
+                                ],
+                                "properties": {
+                                    "scheduled_at": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2026-04-25T15:00:00"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Booking rescheduled"
+                    },
+                    "404": {
+                        "description": "Booking not found"
+                    },
+                    "422": {
+                        "description": "Invalid status or date"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/barbershops/{slug}/reviews": {
             "post": {
                 "tags": [

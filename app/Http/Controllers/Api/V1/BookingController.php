@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Contracts\Services\Http\Api\V1\BookingServiceContract;
 use App\Http\Requests\Api\V1\Booking\CreateRequest;
 use App\Http\Requests\Api\V1\Booking\ListRequest;
+use App\Http\Requests\Api\V1\Booking\RescheduleRequest;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Attributes as OA;
 
@@ -121,5 +122,69 @@ class BookingController extends Controller
     public function list(ListRequest $request, BookingServiceContract $service): JsonResponse
     {
         return $service->list($request);
+    }
+
+    /**
+     * @param int                    $id
+     * @param BookingServiceContract $service
+     *
+     * @return JsonResponse
+     */
+    #[OA\Post(
+        path: '/bookings/{id}/cancel',
+        operationId: 'bookingCancel',
+        description: 'Cancels a pending or confirmed booking',
+        summary: 'Cancel booking',
+        security: [['bearerAuth' => []]],
+        tags: ['Booking'],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Booking cancelled'),
+            new OA\Response(response: 404, description: 'Booking not found'),
+            new OA\Response(response: 422, description: 'Invalid status'),
+        ]
+    )]
+    public function cancel(int $id, BookingServiceContract $service): JsonResponse
+    {
+        return $service->cancel($id);
+    }
+
+    /**
+     * @param int                    $id
+     * @param RescheduleRequest      $request
+     * @param BookingServiceContract $service
+     *
+     * @return JsonResponse
+     */
+    #[OA\Post(
+        path: '/bookings/{id}/reschedule',
+        operationId: 'bookingReschedule',
+        description: 'Reschedules a pending or confirmed booking to a new datetime',
+        summary: 'Reschedule booking',
+        security: [['bearerAuth' => []]],
+        tags: ['Booking'],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['scheduled_at'],
+                properties: [
+                    new OA\Property(property: 'scheduled_at', type: 'string', format: 'date-time', example: '2026-04-25T15:00:00'),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'Booking rescheduled'),
+            new OA\Response(response: 404, description: 'Booking not found'),
+            new OA\Response(response: 422, description: 'Invalid status or date'),
+        ]
+    )]
+    public function reschedule(int $id, RescheduleRequest $request, BookingServiceContract $service): JsonResponse
+    {
+        return $service->reschedule($id, $request);
     }
 }

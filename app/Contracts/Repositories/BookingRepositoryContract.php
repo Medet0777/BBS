@@ -32,4 +32,20 @@ interface BookingRepositoryContract
      * @return LengthAwarePaginator
      */
     public function getUserBookings(int $userId, ?string $filter = null, int $perPage = 10): LengthAwarePaginator;
+
+    /**
+     * @param int $id
+     * @param int $userId
+     *
+     * @return Booking|null
+     */
+    public function findForUser(int $id, int $userId): ?Booking;
+
+    /**
+     * @param Booking $booking
+     * @param array   $data
+     *
+     * @return Booking
+     */
+    public function update(Booking $booking, array $data): Booking;
 }
