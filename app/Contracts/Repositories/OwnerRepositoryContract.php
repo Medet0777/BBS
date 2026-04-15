@@ -61,4 +61,13 @@ interface OwnerRepositoryContract
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getNearestBookings(int $barbershopId, int $limit = 3): \Illuminate\Database\Eloquent\Collection;
+
+    /**
+     * @param int    $barbershopId
+     * @param string $from
+     * @param string $to
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getBookingsInRange(int $barbershopId, string $from, string $to): \Illuminate\Database\Eloquent\Collection;
 }

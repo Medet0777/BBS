@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Contracts\Services\Http\Api\V1\OwnerServiceContract;
+use App\Http\Requests\Api\V1\Owner\CalendarRequest;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Attributes as OA;
 
@@ -65,5 +66,57 @@ class OwnerController extends Controller
     public function dashboard(OwnerServiceContract $service): JsonResponse
     {
         return $service->dashboard();
+    }
+
+    /**
+     * @param CalendarRequest      $request
+     * @param OwnerServiceContract $service
+     *
+     * @return JsonResponse
+     */
+    #[OA\Get(
+        path: '/owner/calendar',
+        operationId: 'ownerCalendar',
+        description: 'Returns bookings grouped by date for a given range (max 31 days).',
+        summary: 'Owner calendar',
+        security: [['bearerAuth' => []]],
+        tags: ['Owner'],
+        parameters: [
+            new OA\Parameter(name: 'from', in: 'query', required: true, schema: new OA\Schema(type: 'string', format: 'date', example: '2026-04-01')),
+            new OA\Parameter(name: 'to', in: 'query', required: true, schema: new OA\Schema(type: 'string', format: 'date', example: '2026-04-30')),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Calendar data',
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: 'success', type: 'boolean', example: true),
+                    new OA\Property(property: 'data', properties: [
+                        new OA\Property(property: 'from', type: 'string', format: 'date'),
+                        new OA\Property(property: 'to', type: 'string', format: 'date'),
+                        new OA\Property(property: 'total', type: 'integer'),
+                        new OA\Property(property: 'days', type: 'array', items: new OA\Items(properties: [
+                            new OA\Property(property: 'date', type: 'string', format: 'date'),
+                            new OA\Property(property: 'count', type: 'integer'),
+                            new OA\Property(property: 'bookings', type: 'array', items: new OA\Items(properties: [
+                                new OA\Property(property: 'id', type: 'integer'),
+                                new OA\Property(property: 'client_name', type: 'string'),
+                                new OA\Property(property: 'barber_name', type: 'string'),
+                                new OA\Property(property: 'scheduled_at', type: 'string', format: 'date-time'),
+                                new OA\Property(property: 'total_price', type: 'number', format: 'float'),
+                                new OA\Property(property: 'status', type: 'string'),
+                            ])),
+                        ])),
+                    ], type: 'object'),
+                ])
+            ),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(response: 403, description: 'Not an owner'),
+            new OA\Response(response: 422, description: 'Validation error (invalid range or > 31 days)'),
+        ]
+    )]
+    public function calendar(CalendarRequest $request, OwnerServiceContract $service): JsonResponse
+    {
+        return $service->calendar($request);
     }
 }

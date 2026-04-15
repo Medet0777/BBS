@@ -123,4 +123,20 @@ class OwnerRepository implements OwnerRepositoryContract
             ->limit($limit)
             ->get();
     }
+
+    /**
+     * @param int    $barbershopId
+     * @param string $from
+     * @param string $to
+     *
+     * @return Collection
+     */
+    public function getBookingsInRange(int $barbershopId, string $from, string $to): Collection
+    {
+        return Booking::where('barbershop_id', $barbershopId)
+            ->whereBetween('scheduled_at', [$from, $to])
+            ->with(['user', 'barber'])
+            ->orderBy('scheduled_at')
+            ->get();
+    }
 }

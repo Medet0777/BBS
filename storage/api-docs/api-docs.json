@@ -1621,6 +1621,129 @@
                 ]
             }
         },
+        "/owner/calendar": {
+            "get": {
+                "tags": [
+                    "Owner"
+                ],
+                "summary": "Owner calendar",
+                "description": "Returns bookings grouped by date for a given range (max 31 days).",
+                "operationId": "ownerCalendar",
+                "parameters": [
+                    {
+                        "name": "from",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2026-04-01"
+                        }
+                    },
+                    {
+                        "name": "to",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2026-04-30"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Calendar data",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "from": {
+                                                    "type": "string",
+                                                    "format": "date"
+                                                },
+                                                "to": {
+                                                    "type": "string",
+                                                    "format": "date"
+                                                },
+                                                "total": {
+                                                    "type": "integer"
+                                                },
+                                                "days": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "date": {
+                                                                "type": "string",
+                                                                "format": "date"
+                                                            },
+                                                            "count": {
+                                                                "type": "integer"
+                                                            },
+                                                            "bookings": {
+                                                                "type": "array",
+                                                                "items": {
+                                                                    "properties": {
+                                                                        "id": {
+                                                                            "type": "integer"
+                                                                        },
+                                                                        "client_name": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "barber_name": {
+                                                                            "type": "string"
+                                                                        },
+                                                                        "scheduled_at": {
+                                                                            "type": "string",
+                                                                            "format": "date-time"
+                                                                        },
+                                                                        "total_price": {
+                                                                            "type": "number",
+                                                                            "format": "float"
+                                                                        },
+                                                                        "status": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    },
+                                                                    "type": "object"
+                                                                }
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Not an owner"
+                    },
+                    "422": {
+                        "description": "Validation error (invalid range or > 31 days)"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/barbershops/{slug}/reviews": {
             "post": {
                 "tags": [

@@ -5,6 +5,7 @@ namespace App\Services\Http\Api\V1;
 use App\Contracts\Repositories\OwnerRepositoryContract;
 use App\Contracts\Services\Http\Api\V1\OwnerServiceContract;
 use App\Enums\BookingStatus;
+use App\Http\Requests\Api\V1\Owner\CalendarRequest;
 use App\Traits\Services\Http\Api\V1\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
@@ -35,7 +36,6 @@ class OwnerService implements OwnerServiceContract
 
         $excludeCancelled = [BookingStatus::Cancelled->value];
 
-        // 0. Date ranges
         $todayFrom     = Carbon::today()->toDateTimeString();
         $todayTo       = Carbon::today()->endOfDay()->toDateTimeString();
         $yesterdayFrom = Carbon::yesterday()->toDateTimeString();
@@ -49,22 +49,18 @@ class OwnerService implements OwnerServiceContract
         $last7From = Carbon::now()->subDays(6)->startOfDay()->toDateTimeString();
         $last7To   = Carbon::now()->endOfDay()->toDateTimeString();
 
-        // 1. Today bookings count + delta vs yesterday
         $todayBookings     = $this->ownerRepository->countBookingsInRange($barbershop->id, $todayFrom, $todayTo, $excludeCancelled);
         $yesterdayBookings = $this->ownerRepository->countBookingsInRange($barbershop->id, $yesterdayFrom, $yesterdayTo, $excludeCancelled);
         $bookingsDelta     = $todayBookings - $yesterdayBookings;
 
-        // 2. This week revenue + % change vs previous week
         $weekRevenue     = $this->ownerRepository->sumRevenueInRange($barbershop->id, $weekFrom, $weekTo, $excludeCancelled);
         $prevWeekRevenue = $this->ownerRepository->sumRevenueInRange($barbershop->id, $prevWeekFrom, $prevWeekTo, $excludeCancelled);
         $revenueDeltaPct = $prevWeekRevenue > 0
             ? round((($weekRevenue - $prevWeekRevenue) / $prevWeekRevenue) * 100, 1)
             : null;
 
-        // 3. New clients this week
         $newClients = $this->ownerRepository->countNewClientsInRange($barbershop->id, $weekFrom, $weekTo, $excludeCancelled);
 
-        // 4. Revenue per day (last 7 days, fill gaps with 0)
         $revenueRaw = $this->ownerRepository->revenuePerDayInRange($barbershop->id, $last7From, $last7To, $excludeCancelled);
         $revenue7d  = [];
         for ($i = 6; $i >= 0; $i--) {
@@ -75,7 +71,6 @@ class OwnerService implements OwnerServiceContract
             ];
         }
 
-        // 5. Nearest 3 bookings
         $nearest = $this->ownerRepository->getNearestBookings($barbershop->id, 3);
 
         return $this->success([
@@ -103,6 +98,48 @@ class OwnerService implements OwnerServiceContract
                 'total_price'    => $booking->total_price,
                 'status'         => $booking->status->value,
             ]),
+        ]);
+    }
+
+    /**
+     * @param CalendarRequest $request
+     *
+     * @return JsonResponse
+     */
+    public function calendar(CalendarRequest $request): JsonResponse
+    {
+        $barbershop = $this->ownerRepository->findBarbershopByOwner(auth()->id());
+
+        if (!$barbershop) {
+            return $this->error('You do not own any barbershop', 'not_an_owner', 403);
+        }
+
+        $from = Carbon::parse($request->input('from'))->startOfDay()->toDateTimeString();
+        $to   = Carbon::parse($request->input('to'))->endOfDay()->toDateTimeString();
+
+        $bookings = $this->ownerRepository->getBookingsInRange($barbershop->id, $from, $to);
+
+        $grouped = $bookings
+            ->groupBy(fn ($booking) => Carbon::parse($booking->scheduled_at)->toDateString())
+            ->map(fn ($dayBookings, $date) => [
+                'date'     => $date,
+                'count'    => $dayBookings->count(),
+                'bookings' => $dayBookings->map(fn ($booking) => [
+                    'id'           => $booking->id,
+                    'client_name'  => $booking->user?->name,
+                    'barber_name'  => $booking->barber?->name,
+                    'scheduled_at' => $booking->scheduled_at,
+                    'total_price'  => $booking->total_price,
+                    'status'       => $booking->status->value,
+                ])->values(),
+            ])
+            ->values();
+
+        return $this->success([
+            'from'  => $request->input('from'),
+            'to'    => $request->input('to'),
+            'total' => $bookings->count(),
+            'days'  => $grouped,
         ]);
     }
 }

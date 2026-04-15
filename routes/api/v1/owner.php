@@ -5,4 +5,5 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->prefix('owner')->group(function () {
     Route::get('/dashboard', [OwnerController::class, 'dashboard']);
+    Route::get('/calendar', [OwnerController::class, 'calendar']);
 });
