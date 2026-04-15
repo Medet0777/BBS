@@ -3,9 +3,12 @@
 namespace App\Repositories;
 
 use App\Contracts\Repositories\BookingRepositoryContract;
+use App\Enums\BookingStatus;
 use App\Models\Booking;
 use App\Models\Service;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Carbon;
 
 class BookingRepository implements BookingRepositoryContract
 {
@@ -33,5 +36,35 @@ class BookingRepository implements BookingRepositoryContract
     public function getServicesByIds(array $serviceIds): Collection
     {
         return Service::whereIn('id', $serviceIds)->get();
+    }
+
+    /**
+     * @param int         $userId
+     * @param string|null $filter
+     * @param int         $perPage
+     *
+     * @return LengthAwarePaginator
+     */
+    public function getUserBookings(int $userId, ?string $filter = null, int $perPage = 10): LengthAwarePaginator
+    {
+        $query = Booking::where('user_id', $userId)
+            ->with(['barbershop', 'barber']);
+
+        $now = Carbon::now();
+
+        if ($filter === 'upcoming') {
+            $query->where('scheduled_at', '>=', $now)
+                  ->whereNotIn('status', [BookingStatus::Cancelled->value, BookingStatus::Completed->value])
+                  ->orderBy('scheduled_at');
+        } elseif ($filter === 'past') {
+            $query->where(function ($q) use ($now) {
+                $q->where('scheduled_at', '<', $now)
+                  ->orWhereIn('status', [BookingStatus::Cancelled->value, BookingStatus::Completed->value]);
+            })->orderByDesc('scheduled_at');
+        } else {
+            $query->orderByDesc('scheduled_at');
+        }
+
+        return $query->paginate($perPage);
     }
 }

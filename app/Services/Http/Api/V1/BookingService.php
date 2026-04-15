@@ -6,7 +6,9 @@ use App\Contracts\Repositories\BookingRepositoryContract;
 use App\Contracts\Services\Http\Api\V1\BookingServiceContract;
 use App\Enums\BookingStatus;
 use App\Http\Requests\Api\V1\Booking\CreateRequest;
+use App\Http\Requests\Api\V1\Booking\ListRequest;
 use App\Http\Resources\Api\V1\Booking\CreateResource;
+use App\Http\Resources\Api\V1\Booking\ListResource;
 use App\Models\Barber;
 use App\Traits\Services\Http\Api\V1\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -84,5 +86,20 @@ class BookingService implements BookingServiceContract
         ], $pivot);
 
         return $this->success(new CreateResource($booking), 'Booking created', 201);
+    }
+
+    /**
+     * @param ListRequest $request
+     *
+     * @return JsonResponse
+     */
+    public function list(ListRequest $request): JsonResponse
+    {
+        $filter  = $request->input('filter');
+        $perPage = $request->integer('per_page', 10);
+
+        $bookings = $this->bookingRepository->getUserBookings(auth()->id(), $filter, $perPage);
+
+        return $this->success(ListResource::collection($bookings)->response()->getData(true));
     }
 }

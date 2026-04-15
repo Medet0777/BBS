@@ -3,6 +3,7 @@
 namespace App\Contracts\Repositories;
 
 use App\Models\Booking;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
 interface BookingRepositoryContract
@@ -22,4 +23,13 @@ interface BookingRepositoryContract
      * @return Collection
      */
     public function getServicesByIds(array $serviceIds): Collection;
+
+    /**
+     * @param int         $userId
+     * @param string|null $filter
+     * @param int         $perPage
+     *
+     * @return LengthAwarePaginator
+     */
+    public function getUserBookings(int $userId, ?string $filter = null, int $perPage = 10): LengthAwarePaginator;
 }

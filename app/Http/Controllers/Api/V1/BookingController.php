@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Contracts\Services\Http\Api\V1\BookingServiceContract;
 use App\Http\Requests\Api\V1\Booking\CreateRequest;
+use App\Http\Requests\Api\V1\Booking\ListRequest;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Attributes as OA;
 
@@ -71,5 +72,54 @@ class BookingController extends Controller
     public function create(CreateRequest $request, BookingServiceContract $service): JsonResponse
     {
         return $service->create($request);
+    }
+
+    /**
+     * @param ListRequest            $request
+     * @param BookingServiceContract $service
+     *
+     * @return JsonResponse
+     */
+    #[OA\Get(
+        path: '/bookings',
+        operationId: 'bookingList',
+        description: 'Returns paginated list of authenticated user bookings. Filter by upcoming or past.',
+        summary: 'My bookings',
+        security: [['bearerAuth' => []]],
+        tags: ['Booking'],
+        parameters: [
+            new OA\Parameter(name: 'filter', in: 'query', description: 'upcoming or past', required: false, schema: new OA\Schema(type: 'string', enum: ['upcoming', 'past'])),
+            new OA\Parameter(name: 'per_page', in: 'query', required: false, schema: new OA\Schema(type: 'integer', default: 10)),
+            new OA\Parameter(name: 'page', in: 'query', required: false, schema: new OA\Schema(type: 'integer', default: 1)),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Paginated bookings',
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: 'success', type: 'boolean', example: true),
+                    new OA\Property(property: 'data', properties: [
+                        new OA\Property(property: 'data', type: 'array', items: new OA\Items(properties: [
+                            new OA\Property(property: 'id', type: 'integer', example: 1),
+                            new OA\Property(property: 'barbershop_name', type: 'string', example: 'BarbershopKZ'),
+                            new OA\Property(property: 'barbershop_logo', type: 'string', nullable: true),
+                            new OA\Property(property: 'barber_name', type: 'string', example: 'Alikhan'),
+                            new OA\Property(property: 'scheduled_at', type: 'string', format: 'date-time'),
+                            new OA\Property(property: 'total_price', type: 'number', format: 'float', example: 1500),
+                            new OA\Property(property: 'status', type: 'string', enum: ['pending', 'confirmed', 'cancelled', 'completed']),
+                        ])),
+                        new OA\Property(property: 'current_page', type: 'integer'),
+                        new OA\Property(property: 'last_page', type: 'integer'),
+                        new OA\Property(property: 'per_page', type: 'integer'),
+                        new OA\Property(property: 'total', type: 'integer'),
+                    ], type: 'object'),
+                ])
+            ),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+        ]
+    )]
+    public function list(ListRequest $request, BookingServiceContract $service): JsonResponse
+    {
+        return $service->list($request);
     }
 }
