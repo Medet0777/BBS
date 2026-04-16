@@ -1390,6 +1390,112 @@
                 ]
             }
         },
+        "/bookings/{id}": {
+            "get": {
+                "tags": [
+                    "Booking"
+                ],
+                "summary": "Show booking detail",
+                "description": "Returns booking details with services, barbershop and barber info",
+                "operationId": "bookingShow",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Booking details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer"
+                                                },
+                                                "barbershop_name": {
+                                                    "type": "string"
+                                                },
+                                                "barbershop_address": {
+                                                    "type": "string"
+                                                },
+                                                "barber_name": {
+                                                    "type": "string"
+                                                },
+                                                "scheduled_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "status": {
+                                                    "type": "string"
+                                                },
+                                                "services": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer"
+                                                            },
+                                                            "name": {
+                                                                "type": "string"
+                                                            },
+                                                            "price": {
+                                                                "type": "number"
+                                                            },
+                                                            "duration_minutes": {
+                                                                "type": "integer"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "total_price": {
+                                                    "type": "number"
+                                                },
+                                                "total_duration_minutes": {
+                                                    "type": "integer"
+                                                },
+                                                "comment": {
+                                                    "type": "string",
+                                                    "nullable": true
+                                                },
+                                                "reminder_enabled": {
+                                                    "type": "boolean"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Booking not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/bookings/{id}/cancel": {
             "post": {
                 "tags": [

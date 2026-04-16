@@ -76,6 +76,57 @@ class BookingController extends Controller
     }
 
     /**
+     * @param int                    $id
+     * @param BookingServiceContract $service
+     *
+     * @return JsonResponse
+     */
+    #[OA\Get(
+        path: '/bookings/{id}',
+        operationId: 'bookingShow',
+        description: 'Returns booking details with services, barbershop and barber info',
+        summary: 'Show booking detail',
+        security: [['bearerAuth' => []]],
+        tags: ['Booking'],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Booking details',
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: 'success', type: 'boolean', example: true),
+                    new OA\Property(property: 'data', properties: [
+                        new OA\Property(property: 'id', type: 'integer'),
+                        new OA\Property(property: 'barbershop_name', type: 'string'),
+                        new OA\Property(property: 'barbershop_address', type: 'string'),
+                        new OA\Property(property: 'barber_name', type: 'string'),
+                        new OA\Property(property: 'scheduled_at', type: 'string', format: 'date-time'),
+                        new OA\Property(property: 'status', type: 'string'),
+                        new OA\Property(property: 'services', type: 'array', items: new OA\Items(properties: [
+                            new OA\Property(property: 'id', type: 'integer'),
+                            new OA\Property(property: 'name', type: 'string'),
+                            new OA\Property(property: 'price', type: 'number'),
+                            new OA\Property(property: 'duration_minutes', type: 'integer'),
+                        ])),
+                        new OA\Property(property: 'total_price', type: 'number'),
+                        new OA\Property(property: 'total_duration_minutes', type: 'integer'),
+                        new OA\Property(property: 'comment', type: 'string', nullable: true),
+                        new OA\Property(property: 'reminder_enabled', type: 'boolean'),
+                    ], type: 'object'),
+                ])
+            ),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(response: 404, description: 'Booking not found'),
+        ]
+    )]
+    public function show(int $id, BookingServiceContract $service): JsonResponse
+    {
+        return $service->show($id);
+    }
+
+    /**
      * @param ListRequest            $request
      * @param BookingServiceContract $service
      *

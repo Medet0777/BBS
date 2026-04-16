@@ -29,6 +29,13 @@ interface BookingServiceContract
      *
      * @return JsonResponse
      */
+    public function show(int $id): JsonResponse;
+
+    /**
+     * @param int $id
+     *
+     * @return JsonResponse
+     */
     public function cancel(int $id): JsonResponse;
 
     /**

@@ -10,9 +10,11 @@ use App\Http\Requests\Api\V1\Booking\ListRequest;
 use App\Http\Requests\Api\V1\Booking\RescheduleRequest;
 use App\Http\Resources\Api\V1\Booking\CreateResource;
 use App\Http\Resources\Api\V1\Booking\ListResource;
+use App\Jobs\SendBookingReminderJob;
 use App\Models\Barber;
 use App\Traits\Services\Http\Api\V1\ApiResponse;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Carbon;
 
 class BookingService implements BookingServiceContract
 {
@@ -38,7 +40,6 @@ class BookingService implements BookingServiceContract
         $barberId     = $request->integer('barber_id');
         $serviceIds   = $request->input('service_ids');
 
-        // 1. Check barber belongs to chosen barbershop
         $barber = Barber::where('id', $barberId)
             ->where('barbershop_id', $barbershopId)
             ->where('is_active', true)
@@ -48,7 +49,6 @@ class BookingService implements BookingServiceContract
             return $this->error('Barber does not belong to this barbershop', 'invalid_barber', 422);
         }
 
-        // 2. Load services and verify they all belong to this barbershop
         $services = $this->bookingRepository->getServicesByIds($serviceIds);
 
         if ($services->count() !== count($serviceIds)) {
@@ -59,7 +59,6 @@ class BookingService implements BookingServiceContract
             return $this->error('Services do not belong to this barbershop', 'invalid_services', 422);
         }
 
-        // 3. Calculate totals + build pivot payload with price/duration snapshot
         $totalPrice    = 0;
         $totalDuration = 0;
         $pivot         = [];
@@ -73,7 +72,6 @@ class BookingService implements BookingServiceContract
             ];
         }
 
-        // 4. Persist booking + attach services
         $booking = $this->bookingRepository->create([
             'user_id'                => auth()->id(),
             'barbershop_id'          => $barbershopId,
@@ -85,6 +83,14 @@ class BookingService implements BookingServiceContract
             'total_price'            => $totalPrice,
             'total_duration_minutes' => $totalDuration,
         ], $pivot);
+
+        if ($booking->reminder_enabled) {
+            $reminderAt = Carbon::parse($booking->scheduled_at)->subHours(2);
+
+            if ($reminderAt->isFuture()) {
+                SendBookingReminderJob::dispatch($booking->id)->delay($reminderAt);
+            }
+        }
 
         return $this->success(new CreateResource($booking), 'Booking created', 201);
     }
@@ -102,6 +108,22 @@ class BookingService implements BookingServiceContract
         $bookings = $this->bookingRepository->getUserBookings(auth()->id(), $filter, $perPage);
 
         return $this->success(ListResource::collection($bookings)->response()->getData(true));
+    }
+
+    /**
+     * @param int $id
+     *
+     * @return JsonResponse
+     */
+    public function show(int $id): JsonResponse
+    {
+        $booking = $this->bookingRepository->findForUser($id, auth()->id());
+
+        if (!$booking) {
+            return $this->error('Booking not found', 'not_found', 404);
+        }
+
+        return $this->success(new CreateResource($booking));
     }
 
     /**
