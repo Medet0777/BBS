@@ -10,6 +10,7 @@ RUN apk add --no-cache \
     oniguruma-dev \
     libxml2-dev \
     mysql-client \
+    envsubst \
     && docker-php-ext-install pdo pdo_mysql mbstring exif pcntl bcmath gd
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -28,10 +29,8 @@ COPY docker/supervisord.conf /etc/supervisord.conf
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-RUN php artisan config:cache \
-    && php artisan route:cache \
-    && php artisan view:cache
+RUN php artisan view:cache
 
-EXPOSE 8080
+EXPOSE ${PORT:-8080}
 
 ENTRYPOINT ["/entrypoint.sh"]
