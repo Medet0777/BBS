@@ -1,0 +1,905 @@
+[
+  {
+    "name": "BarbarossA",
+    "logo": null,
+    "address": "г. Алматы, проспект Назарбаева, 172, 1 этаж",
+    "latitude": 43.242929,
+    "longitude": 76.948532,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Детская стрижка", "description": null},
+      {"name": "Бритье", "description": null},
+      {"name": "Уход за бородой", "description": null},
+      {"name": "Мужской маникюр", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 8000", "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Chop-Chop",
+    "logo": null,
+    "address": "г. Алматы, ул. Толе би, 65, 1 этаж",
+    "latitude": 43.254749,
+    "longitude": 76.939017,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Моделирование бороды", "description": null},
+      {"name": "Классическое бритье опасной бритвой", "description": null},
+      {"name": "Стрижка + оформление бороды + уход за лицом", "description": "Комплексная услуга"},
+      {"name": "Детская стрижка", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 7000", "currency": "KZT"},
+      {"service_name": "Моделирование бороды", "price": 2000, "currency": "KZT"},
+      {"service_name": "Классическое бритье опасной бритвой", "price": 2500, "currency": "KZT"},
+      {"service_name": "Стрижка + борода + уход за лицом", "price": 4500, "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Ханская Бритва",
+    "logo": null,
+    "address": "г. Алматы, ул. Розыбакиева, 237/1 к1",
+    "latitude": 43.205027,
+    "longitude": 76.892816,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Бритье", "description": null},
+      {"name": "Уход за бородой и волосами", "description": null},
+      {"name": "Детская стрижка", "description": "5–12 лет"},
+      {"name": "Чистка лица", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 6000", "currency": "KZT"},
+      {"service_name": "Детская стрижка", "price": 3000, "currency": "KZT"},
+      {"service_name": "Бритье", "price": 3000, "currency": "KZT"},
+      {"service_name": "Бритье головы", "price": 7000, "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Rival Barbershop",
+    "logo": null,
+    "address": "г. Алматы, ул. Ораза Жандосова, 144/1",
+    "latitude": 43.214180,
+    "longitude": 76.872743,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Стрижка бороды", "description": null},
+      {"name": "Детская стрижка", "description": null},
+      {"name": "Выезд на дом", "description": null},
+      {"name": "Маска для лица", "description": "В подарок при первом посещении"}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 4000", "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "West Coast Barbershop",
+    "logo": null,
+    "address": "г. Алматы, мкр. Орбита-1, 21, 1 этаж",
+    "latitude": 43.200216,
+    "longitude": 76.880451,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Стрижка бороды", "description": null},
+      {"name": "Бритье опасной бритвой", "description": null},
+      {"name": "Детская стрижка", "description": null},
+      {"name": "Укладка", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 5000", "currency": "KZT"},
+      {"service_name": "Комплекс (стрижка + борода)", "price": 7000, "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Бравый",
+    "logo": null,
+    "address": "г. Алматы, ул. Навои, 310, 1 этаж",
+    "latitude": 43.199162,
+    "longitude": 76.887227,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Детская стрижка", "description": null},
+      {"name": "Бритье / корректировка бороды", "description": "Классическое бритье с распариванием и горячим полотенцем"},
+      {"name": "Тонировка бороды", "description": null},
+      {"name": "Чистка лица (скраб и чёрная маска)", "description": null},
+      {"name": "Мытье головы и укладка", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "4000–7500", "currency": "KZT"},
+      {"service_name": "Детская стрижка", "price": "3500–6500", "currency": "KZT"},
+      {"service_name": "Бритье / корректировка бороды", "price": "3500–5000", "currency": "KZT"},
+      {"service_name": "Комбо (стрижка + бритье)", "price": "8500–11500", "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Serdzhio",
+    "logo": null,
+    "address": "г. Алматы, 9-й микрорайон, 21",
+    "latitude": 43.213159,
+    "longitude": 76.858194,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Маска для лица", "description": "В подарок при первом посещении"},
+      {"name": "Депиляция", "description": null},
+      {"name": "Массаж", "description": null},
+      {"name": "Мужская завивка", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 6000", "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Compton Barbershop",
+    "logo": null,
+    "address": "г. Алматы, проспект Гагарина, 309",
+    "latitude": 43.203200,
+    "longitude": 76.898658,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Детская стрижка", "description": null},
+      {"name": "Оформление бороды", "description": null},
+      {"name": "Мужская химзавивка", "description": null},
+      {"name": "Комплекс «Отец + сын»", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 6000", "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Barber Time Barbershop",
+    "logo": null,
+    "address": "г. Алматы, проспект Гагарина, 309, 1 этаж",
+    "latitude": 43.202998,
+    "longitude": 76.896864,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Стрижка бороды", "description": null},
+      {"name": "Детская стрижка", "description": null},
+      {"name": "Бритье", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 4000", "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Тот Самый Барбершоп",
+    "logo": null,
+    "address": "г. Алматы, ул. Наурызбай батыра, 63, 1 этаж",
+    "latitude": 43.255544,
+    "longitude": 76.935840,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Детская стрижка", "description": null},
+      {"name": "Стрижка бороды", "description": null},
+      {"name": "Бритье", "description": null},
+      {"name": "Укладка", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 8000", "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Лесоруб (Lumberjack)",
+    "logo": null,
+    "address": "г. Алматы, ул. Жарокова, 148, 1 этаж",
+    "latitude": 43.234932,
+    "longitude": 76.900179,
+    "services": [
+      {"name": "Стрижка", "description": null},
+      {"name": "Стрижка удлиненная (ножницами)", "description": null},
+      {"name": "Стрижка и бритьё", "description": "Комплексная услуга"},
+      {"name": "Бритьё / коррекция бороды и усов", "description": null},
+      {"name": "Детская стрижка", "description": "5–13 лет"},
+      {"name": "VIP комплекс", "description": "Стрижка, бритьё, депиляция, скраб, чёрная маска"},
+      {"name": "Камуфляж головы", "description": null},
+      {"name": "Камуфляж бороды", "description": null},
+      {"name": "Спа-уход Volcano", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Стрижка", "price": 7000, "currency": "KZT"},
+      {"service_name": "Стрижка удлиненная", "price": 8000, "currency": "KZT"},
+      {"service_name": "Стрижка и бритьё", "price": 10000, "currency": "KZT"},
+      {"service_name": "Бритьё / коррекция бороды", "price": 4000, "currency": "KZT"},
+      {"service_name": "Детская стрижка", "price": 5000, "currency": "KZT"},
+      {"service_name": "VIP комплекс", "price": 13000, "currency": "KZT"},
+      {"service_name": "Отец + сын", "price": 11000, "currency": "KZT"},
+      {"service_name": "Камуфляж головы", "price": "от 5000", "currency": "KZT"},
+      {"service_name": "Камуфляж бороды", "price": "от 4000", "currency": "KZT"},
+      {"service_name": "Чёрная маска + скраб", "price": 3000, "currency": "KZT"},
+      {"service_name": "Спа-уход Volcano", "price": 6000, "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Hunter Barbershop",
+    "logo": null,
+    "address": "г. Алматы, ул. Зеина Шашкина, 19, 1 этаж",
+    "latitude": 43.220739,
+    "longitude": 76.934088,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Укладка", "description": null},
+      {"name": "Стрижка бороды", "description": null},
+      {"name": "Моделирование бороды", "description": null},
+      {"name": "Бритье бороды", "description": null},
+      {"name": "Тонирование бороды", "description": null},
+      {"name": "Стрижка + моделирование бороды", "description": "Комплексная услуга"},
+      {"name": "Бритье головы", "description": null},
+      {"name": "Детская стрижка", "description": "5–12 лет"},
+      {"name": "Отец + Сын", "description": null},
+      {"name": "Маска для лица", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": 6000, "currency": "KZT"},
+      {"service_name": "Укладка", "price": 3000, "currency": "KZT"},
+      {"service_name": "Стрижка бороды", "price": 4000, "currency": "KZT"},
+      {"service_name": "Моделирование бороды", "price": 4000, "currency": "KZT"},
+      {"service_name": "Тонирование бороды", "price": 4000, "currency": "KZT"},
+      {"service_name": "Стрижка + моделирование бороды", "price": 8000, "currency": "KZT"},
+      {"service_name": "Бритье головы", "price": 6000, "currency": "KZT"},
+      {"service_name": "Тонирование головы", "price": 5500, "currency": "KZT"},
+      {"service_name": "Детская стрижка", "price": 4500, "currency": "KZT"},
+      {"service_name": "Отец + Сын", "price": 8500, "currency": "KZT"},
+      {"service_name": "Маска для лица", "price": 2000, "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Черная Борода",
+    "logo": null,
+    "address": "г. Алматы, ул. Желтоксан, 78/86",
+    "latitude": 43.260181,
+    "longitude": 76.939255,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Королевское бритьё", "description": null},
+      {"name": "Детская стрижка", "description": "До 12 лет"},
+      {"name": "Стрижка бороды и усов", "description": null},
+      {"name": "Камуфляж бороды", "description": null},
+      {"name": "Праздничная укладка", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "5000–6000", "currency": "KZT"},
+      {"service_name": "Королевское бритьё", "price": 6000, "currency": "KZT"},
+      {"service_name": "Детская стрижка", "price": "3500–4000", "currency": "KZT"},
+      {"service_name": "Камуфляж бороды", "price": 4000, "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Shelby Barbershop",
+    "logo": null,
+    "address": "г. Алматы, 3-й микрорайон, 28, помещение 3, 1 этаж",
+    "latitude": 43.222475,
+    "longitude": 76.855035,
+    "services": [
+      {"name": "Мужская стрижка", "description": "Глиняная маска + восковая депиляция ушей и носа в комплекте"},
+      {"name": "Детская стрижка", "description": "До 12 лет"},
+      {"name": "Стрижка под машинку", "description": null},
+      {"name": "Комплекс", "description": "Стрижка + моделирование бороды + распаривание + скраб + чёрная маска + глиняная маска"},
+      {"name": "Корректировка бороды", "description": null},
+      {"name": "Тонировка бороды", "description": null},
+      {"name": "Укладка", "description": null},
+      {"name": "Камуфляж седины", "description": null},
+      {"name": "СПА для лица", "description": "Распаривание + скрабирование + 2 маски"}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "5000–6000", "currency": "KZT"},
+      {"service_name": "Детская стрижка", "price": "3000–4000", "currency": "KZT"},
+      {"service_name": "Стрижка под машинку", "price": 2000, "currency": "KZT"},
+      {"service_name": "Комплекс", "price": "9000–11000", "currency": "KZT"},
+      {"service_name": "Корректировка бороды", "price": "4000–5000", "currency": "KZT"},
+      {"service_name": "Тонировка бороды", "price": 4000, "currency": "KZT"},
+      {"service_name": "Укладка", "price": 2000, "currency": "KZT"},
+      {"service_name": "Камуфляж седины", "price": 5000, "currency": "KZT"},
+      {"service_name": "СПА для лица", "price": 4000, "currency": "KZT"},
+      {"service_name": "Окантовка", "price": 1000, "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Бороду не Брей",
+    "logo": null,
+    "address": "г. Алматы, ул. Акан Серы, 31а/1",
+    "latitude": 43.326794,
+    "longitude": 76.949422,
+    "services": [
+      {"name": "Стрижка", "description": null},
+      {"name": "Детская стрижка", "description": "6–11 лет"},
+      {"name": "Коррекция бороды", "description": null},
+      {"name": "Комплексная стрижка (голова + борода)", "description": null},
+      {"name": "Тонировка бороды", "description": null},
+      {"name": "Тонирование седины на голове", "description": null},
+      {"name": "Депиляция воском", "description": "Нос, уши, лицо"},
+      {"name": "Чистка лица", "description": "Распаривание + скраб + глиняная маска"}
+    ],
+    "prices": [
+      {"service_name": "Стрижка", "price": "от 5000", "currency": "KZT"},
+      {"service_name": "Детская стрижка", "price": 4000, "currency": "KZT"},
+      {"service_name": "Коррекция бороды", "price": "от 3000", "currency": "KZT"},
+      {"service_name": "Комплексная стрижка", "price": "от 7000", "currency": "KZT"},
+      {"service_name": "Тонировка бороды", "price": 4000, "currency": "KZT"},
+      {"service_name": "Тонирование седины", "price": 5000, "currency": "KZT"},
+      {"service_name": "Депиляция воском", "price": 1000, "currency": "KZT"},
+      {"service_name": "Чистка лица", "price": 2000, "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "City Barber",
+    "logo": null,
+    "address": "г. Алматы, ул. Пушкина, 83, 1 этаж",
+    "latitude": 43.253287,
+    "longitude": 76.953645,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Комбо стрижка", "description": null},
+      {"name": "Моделирование бороды", "description": null},
+      {"name": "Стрижка + борода", "description": "Комплексная услуга"},
+      {"name": "Полный фарш", "description": "Максимальный комплекс услуг"},
+      {"name": "Детская стрижка", "description": null},
+      {"name": "Тонирование", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Стрижка «Знакомство»", "price": 7500, "currency": "KZT"},
+      {"service_name": "Мужская стрижка", "price": 9500, "currency": "KZT"},
+      {"service_name": "Комбо стрижка", "price": 11000, "currency": "KZT"},
+      {"service_name": "Стрижка + борода", "price": 13500, "currency": "KZT"},
+      {"service_name": "Комбо стрижка + борода", "price": 14500, "currency": "KZT"},
+      {"service_name": "Полный фарш", "price": 18000, "currency": "KZT"},
+      {"service_name": "Моделирование бороды", "price": 6000, "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Bonkers & Co",
+    "logo": null,
+    "address": "г. Алматы, ул. Розыбакиева, 310а, цокольный этаж",
+    "latitude": 43.211500,
+    "longitude": 76.889000,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Детская стрижка", "description": null},
+      {"name": "Мужской маникюр", "description": null},
+      {"name": "Королевское бритье", "description": null},
+      {"name": "Тонирование", "description": null},
+      {"name": "Окантовка", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 10000", "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "TM Barbershop",
+    "logo": null,
+    "address": "г. Алматы, ул. Розыбакиева, 113, цокольный этаж",
+    "latitude": 43.229050,
+    "longitude": 76.890449,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Королевское бритье", "description": null},
+      {"name": "Тонирование бороды", "description": null},
+      {"name": "Тонирование волос", "description": null},
+      {"name": "Уход за бородой", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 7000", "currency": "KZT"},
+      {"service_name": "Королевское бритье", "price": 5000, "currency": "KZT"},
+      {"service_name": "Тонирование бороды", "price": 6000, "currency": "KZT"},
+      {"service_name": "Тонирование волос", "price": 6000, "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Barbershop by Meta",
+    "logo": null,
+    "address": "г. Алматы, ул. Байтурсынова, 100, 1 этаж",
+    "latitude": 43.238577,
+    "longitude": 76.928262,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Детская стрижка", "description": null},
+      {"name": "Бритье", "description": null},
+      {"name": "Стрижка бороды", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 5000", "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Turkish Barber Shop",
+    "logo": null,
+    "address": "г. Алматы, мкр. Жетысу-3, 24, 1 этаж",
+    "latitude": 43.218702,
+    "longitude": 76.845367,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Детская стрижка", "description": null},
+      {"name": "Бритье", "description": null},
+      {"name": "Стрижка бороды", "description": null},
+      {"name": "Выезд на дом", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 5000", "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Golova",
+    "logo": null,
+    "address": "г. Алматы, ул. Абиша Кекилбайулы, 270, блок 1",
+    "latitude": 43.199994,
+    "longitude": 76.890738,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Стрижка «Ата»", "description": "Для пенсионеров"},
+      {"name": "Стрижка ножницами (удлиненная)", "description": null},
+      {"name": "Стрижка налысо", "description": null},
+      {"name": "Детская стрижка", "description": "5–12 лет"},
+      {"name": "Моделирование бороды", "description": null},
+      {"name": "Комплекс GOLOVA", "description": "Полный комплекс услуг"},
+      {"name": "Укладка", "description": null},
+      {"name": "Камуфляж бороды", "description": null},
+      {"name": "Камуфляж головы", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": 6000, "currency": "KZT"},
+      {"service_name": "Стрижка «Ата»", "price": 2500, "currency": "KZT"},
+      {"service_name": "Стрижка ножницами", "price": 7000, "currency": "KZT"},
+      {"service_name": "Стрижка налысо", "price": 2500, "currency": "KZT"},
+      {"service_name": "Детская стрижка", "price": 3500, "currency": "KZT"},
+      {"service_name": "Моделирование бороды", "price": "от 3500", "currency": "KZT"},
+      {"service_name": "Комплекс GOLOVA", "price": 15000, "currency": "KZT"},
+      {"service_name": "Укладка", "price": 2500, "currency": "KZT"},
+      {"service_name": "Камуфляж бороды", "price": 3500, "currency": "KZT"},
+      {"service_name": "Камуфляж головы", "price": "от 4500", "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "BarberHouse",
+    "logo": null,
+    "address": "г. Алматы, 9-й микрорайон, 35",
+    "latitude": 43.216487,
+    "longitude": 76.864264,
+    "services": [
+      {"name": "Мужская стрижка", "description": "Мытье + укладка в комплекте"},
+      {"name": "Детская стрижка", "description": null},
+      {"name": "Стрижка бороды", "description": null},
+      {"name": "Скраб для лица", "description": "В подарок при стрижке"}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 4000", "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Grizzly Barbershop",
+    "logo": null,
+    "address": "г. Алматы, ул. Ауэзова, 104Б",
+    "latitude": 43.234422,
+    "longitude": 76.905016,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Стрижка бороды", "description": null},
+      {"name": "Бритье", "description": null},
+      {"name": "Детская стрижка", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 5000", "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "RBC Barbershop",
+    "logo": null,
+    "address": "г. Алматы, проспект Абая, 40",
+    "latitude": 43.240849,
+    "longitude": 76.928948,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Бритье", "description": null},
+      {"name": "Уход за бородой", "description": null},
+      {"name": "Детская стрижка", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 4000", "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Borz Barbershop",
+    "logo": null,
+    "address": "г. Алматы, ул. Муратбаева, 62",
+    "latitude": 43.257000,
+    "longitude": 76.930000,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Стрижка бороды", "description": null},
+      {"name": "Бритье", "description": null},
+      {"name": "Детская стрижка", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 7000", "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Брадобрей",
+    "logo": null,
+    "address": "г. Алматы, проспект Назарбаева, 154",
+    "latitude": 43.246000,
+    "longitude": 76.948000,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Стрижка бороды и усов", "description": null},
+      {"name": "Экспресс бритьё", "description": null},
+      {"name": "Комбо (стрижка + борода)", "description": null},
+      {"name": "Лечение волос", "description": null},
+      {"name": "Укладка", "description": null},
+      {"name": "Детская стрижка", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 5500", "currency": "KZT"},
+      {"service_name": "Комбо (стрижка + борода)", "price": 7500, "currency": "KZT"},
+      {"service_name": "Экспресс бритьё", "price": 3500, "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Escobar Barbershop",
+    "logo": null,
+    "address": "г. Алматы, мкр. Жетысу-4, 12, цокольный этаж",
+    "latitude": 43.218288,
+    "longitude": 76.838189,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Детская стрижка", "description": null},
+      {"name": "Чистка лица", "description": null},
+      {"name": "Массаж головы", "description": null},
+      {"name": "Бритье", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 4000", "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Iron Barbershop",
+    "logo": null,
+    "address": "г. Алматы, проспект Достык, 296",
+    "latitude": 43.216013,
+    "longitude": 76.965319,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Детская стрижка", "description": null},
+      {"name": "Бритье", "description": null},
+      {"name": "Стрижка бороды", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 7000", "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Bahh Tee Style",
+    "logo": null,
+    "address": "г. Алматы, ул. Жолдасбекова, 9а, бутик 118а, 1 этаж",
+    "latitude": 43.234684,
+    "longitude": 76.955855,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Детская стрижка", "description": null},
+      {"name": "Мужской маникюр", "description": null},
+      {"name": "Стрижка бороды", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 6000", "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Hajime",
+    "logo": null,
+    "address": "г. Алматы, ул. Байтурсынова, 169",
+    "latitude": 43.248000,
+    "longitude": 76.926000,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Детская стрижка", "description": null},
+      {"name": "Стрижка бороды", "description": null},
+      {"name": "Бритье", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 2500", "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Окон нет",
+    "logo": null,
+    "address": "г. Алматы, проспект Гагарина, 133Б",
+    "latitude": 43.228000,
+    "longitude": 76.897000,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Мужской маникюр", "description": null},
+      {"name": "Стрижка бороды", "description": null},
+      {"name": "Укладка", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 15000", "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Бахадур",
+    "logo": null,
+    "address": "г. Алматы, 5-й микрорайон, 19Б",
+    "latitude": 43.232000,
+    "longitude": 76.870000,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Детская стрижка", "description": null},
+      {"name": "Стрижка бороды", "description": null}
+    ],
+    "prices": []
+  },
+  {
+    "name": "Lion's Barbershop",
+    "logo": null,
+    "address": "г. Алматы, мкр. Мамыр-1, 29/1",
+    "latitude": 43.205000,
+    "longitude": 76.893000,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Детская стрижка", "description": null},
+      {"name": "Стрижка бороды", "description": null},
+      {"name": "Бритье", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 5000", "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "MVP Barbershop",
+    "logo": null,
+    "address": "г. Алматы, проспект Аль-Фараби, 19, к3Б, БЦ Нурлы-Тау",
+    "latitude": 43.218000,
+    "longitude": 76.928000,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Стрижка бороды", "description": null},
+      {"name": "Бритье", "description": null},
+      {"name": "Укладка", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 6000", "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Saint Barbershop",
+    "logo": null,
+    "address": "г. Алматы, мкр. Коктем-1, 25",
+    "latitude": 43.234000,
+    "longitude": 76.937000,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Стрижка бороды", "description": null},
+      {"name": "Бритье", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 5000", "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "The Gentlemen's",
+    "logo": null,
+    "address": "г. Алматы, проспект Райымбека, 351/1, блок 4",
+    "latitude": 43.260000,
+    "longitude": 76.979000,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Стрижка бороды", "description": null},
+      {"name": "Бритье", "description": null},
+      {"name": "Укладка", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 5000", "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Pablo",
+    "logo": null,
+    "address": "г. Алматы, ул. Сатпаева, 63",
+    "latitude": 43.233500,
+    "longitude": 76.916000,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Стрижка бороды", "description": null},
+      {"name": "Укладка", "description": null},
+      {"name": "Детская стрижка", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 6000", "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "SR Barbershop",
+    "logo": null,
+    "address": "г. Алматы, ул. Желтоксан, 74",
+    "latitude": 43.253500,
+    "longitude": 76.935000,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Стрижка бороды", "description": null},
+      {"name": "Бритье", "description": null},
+      {"name": "Укладка", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 5000", "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "JS Barbershop",
+    "logo": null,
+    "address": "г. Алматы, проспект Абая, 61",
+    "latitude": 43.238500,
+    "longitude": 76.917000,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Детская стрижка", "description": null},
+      {"name": "Мужская химзавивка", "description": null},
+      {"name": "Стрижка бороды", "description": null},
+      {"name": "Выезд на дом", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 5000", "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Топор",
+    "logo": null,
+    "address": "г. Алматы, ул. Ауэзова, 110",
+    "latitude": 43.232872,
+    "longitude": 76.905197,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Бритье", "description": null},
+      {"name": "Стрижка бороды", "description": null}
+    ],
+    "prices": []
+  },
+  {
+    "name": "Barbershop Joker99",
+    "logo": null,
+    "address": "г. Алматы, ул. Тимирязева, 99",
+    "latitude": 43.225589,
+    "longitude": 76.896911,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Бритье", "description": null},
+      {"name": "Стрижка бороды", "description": null}
+    ],
+    "prices": []
+  },
+  {
+    "name": "Ala Barbershop",
+    "logo": null,
+    "address": "г. Алматы, ул. Жарокова, 198а",
+    "latitude": 43.218000,
+    "longitude": 76.901000,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Стрижка бороды", "description": null},
+      {"name": "Бритье", "description": null}
+    ],
+    "prices": []
+  },
+  {
+    "name": "Стрижем и бреем",
+    "logo": null,
+    "address": "г. Алматы, ул. Кенесары хана, 54/36, мкр. Каргалы",
+    "latitude": 43.232000,
+    "longitude": 76.834000,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Детская стрижка", "description": null},
+      {"name": "Стрижка бороды", "description": null},
+      {"name": "Бритье", "description": null},
+      {"name": "Выезд на дом", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 3000", "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Barbershop Boroda",
+    "logo": null,
+    "address": "г. Алматы, ул. Есим хана, 42г, ТД Magnit",
+    "latitude": 43.268000,
+    "longitude": 76.912000,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Детская стрижка", "description": null},
+      {"name": "Стрижка бороды", "description": null},
+      {"name": "Бритье", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 4000", "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Two Brothers Barbershop",
+    "logo": null,
+    "address": "г. Алматы, ул. Ауэзова, 167",
+    "latitude": 43.229875,
+    "longitude": 76.905012,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Бритье", "description": null},
+      {"name": "Стрижка бороды", "description": null}
+    ],
+    "prices": []
+  },
+  {
+    "name": "001kz Barbershop",
+    "logo": null,
+    "address": "г. Каскелен, ул. Абылай хана, 56/1",
+    "latitude": 43.201000,
+    "longitude": 76.622000,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Бритье", "description": null},
+      {"name": "Груминг", "description": null},
+      {"name": "Детская стрижка", "description": null},
+      {"name": "Маска для лица", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 3000", "currency": "KZT"},
+      {"service_name": "Комплекс (стрижка + маска)", "price": 5000, "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Македонский",
+    "logo": null,
+    "address": "г. Каскелен, проспект Абылай хана, 111/1",
+    "latitude": 43.195000,
+    "longitude": 76.635000,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Бритье", "description": null},
+      {"name": "SPA для лица", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 3500", "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Данияр",
+    "logo": null,
+    "address": "г. Каскелен, проспект Абылай хана, 2",
+    "latitude": 43.207000,
+    "longitude": 76.616000,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Массаж", "description": null},
+      {"name": "Стрижка бороды", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 3000", "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Bs. barbershop",
+    "logo": null,
+    "address": "г. Каскелен, проспект Абылай хана, 6Б",
+    "latitude": 43.206000,
+    "longitude": 76.617000,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Стрижка бороды", "description": null},
+      {"name": "Бритье", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 3000", "currency": "KZT"}
+    ]
+  },
+  {
+    "name": "Hak_Barber",
+    "logo": null,
+    "address": "г. Каскелен, мкр. Алтын ауыл, 10/3",
+    "latitude": 43.215000,
+    "longitude": 76.630000,
+    "services": [
+      {"name": "Мужская стрижка", "description": null},
+      {"name": "Стрижка бороды", "description": null},
+      {"name": "Бритье", "description": null}
+    ],
+    "prices": [
+      {"service_name": "Мужская стрижка", "price": "от 2500", "currency": "KZT"}
+    ]
+  }
+]
