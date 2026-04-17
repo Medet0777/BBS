@@ -15,4 +15,5 @@ Route::group([
     Route::crud('service', 'ServiceCrudController');
     Route::crud('barber', 'BarberCrudController');
     Route::crud('review', 'ReviewCrudController');
+    Route::crud('user', 'UserCrudController');
 });
