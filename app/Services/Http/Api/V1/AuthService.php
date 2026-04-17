@@ -62,7 +62,7 @@ class AuthService implements AuthServiceContract
             'otp_expires_at' => Carbon::now()->addMinutes(5),
         ]);
 
-        Mail::to($dto->email)->send(new OtpCodeMail($otpCode));
+        Mail::to($dto->email)->queue(new OtpCodeMail($otpCode));
 
         return $this->success(null, 'Verification code sent to email');
     }
@@ -185,7 +185,7 @@ class AuthService implements AuthServiceContract
             'otp_expires_at' => Carbon::now()->addMinutes(5),
         ]);
 
-        Mail::to($dto->email)->send(new OtpCodeMail($otpCode));
+        Mail::to($dto->email)->queue(new OtpCodeMail($otpCode));
 
         return $this->success(null, 'Verification code resent');
     }
