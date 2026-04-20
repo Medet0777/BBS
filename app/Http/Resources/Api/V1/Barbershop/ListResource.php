@@ -30,18 +30,22 @@ class ListResource extends JsonResource
         $currentTime = Carbon::now()->format('H:i');
         $isOpen      = $this->opens_at <= $currentTime && $this->closes_at >= $currentTime;
 
+        $minPrice = $this->min_price !== null ? (int) $this->min_price : null;
+
         return [
-            'id'            => $this->id,
-            'name'          => $this->name,
-            'slug'          => $this->slug,
-            'logo'          => $this->logo,
-            'address'       => $this->address,
-            'rating'        => $this->avg_rating !== null ? round((float) $this->avg_rating, 1) : 0,
-            'reviews_count' => (int) $this->reviews_count,
-            'opens_at'      => $this->opens_at,
-            'closes_at'     => $this->closes_at,
-            'status'        => $isOpen ? 'open' : 'closed',
-            'distance_km'   => isset($this->distance_km) ? round((float) $this->distance_km, 2) : null,
+            'id'                => $this->id,
+            'name'              => $this->name,
+            'slug'              => $this->slug,
+            'logo'              => $this->logo,
+            'address'           => $this->address,
+            'rating'            => $this->avg_rating !== null ? round((float) $this->avg_rating, 1) : 0,
+            'reviews_count'     => (int) $this->reviews_count,
+            'opens_at'          => $this->opens_at,
+            'closes_at'         => $this->closes_at,
+            'status'            => $isOpen ? 'open' : 'closed',
+            'min_price'         => $minPrice,
+            'min_price_display' => $minPrice !== null ? 'от ' . $minPrice . ' ₸' : null,
+            'distance_km'       => isset($this->distance_km) ? round((float) $this->distance_km, 2) : null,
         ];
     }
 }

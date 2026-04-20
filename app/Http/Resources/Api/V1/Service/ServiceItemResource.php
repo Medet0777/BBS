@@ -24,7 +24,8 @@ class ServiceItemResource extends JsonResource
         return [
             'id'               => $this->id,
             'name'             => $this->name,
-            'price'            => $this->price,
+            'price'            => (int) $this->price,
+            'price_display'    => (int) $this->price . ' ₸',
             'duration_minutes' => $this->duration_minutes,
         ];
     }

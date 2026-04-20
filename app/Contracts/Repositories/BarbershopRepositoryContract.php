@@ -33,4 +33,13 @@ interface BarbershopRepositoryContract
      * @return Barbershop|null
      */
     public function findBySlug(string $slug): ?Barbershop;
+
+    /**
+     * @param int    $barbershopId
+     * @param string $date
+     * @param int|null $barberId
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getBookingsForDate(int $barbershopId, string $date, ?int $barberId = null): \Illuminate\Database\Eloquent\Collection;
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Contracts\Services\Http\Api\V1\BarbershopServiceContract;
 use App\Http\Requests\Api\V1\Barbershop\ListRequest;
+use App\Http\Requests\Api\V1\Barbershop\SlotsRequest;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Attributes as OA;
 
@@ -151,5 +152,45 @@ class BarbershopController extends Controller
     public function show(string $slug, BarbershopServiceContract $service): JsonResponse
     {
         return $service->show($slug);
+    }
+
+    /**
+     * @param string                    $slug
+     * @param SlotsRequest              $request
+     * @param BarbershopServiceContract $service
+     *
+     * @return JsonResponse
+     */
+    #[OA\Get(
+        path: '/barbershops/{slug}/available-slots',
+        operationId: 'barbershopAvailableSlots',
+        description: 'Returns available time slots for a given date, optionally filtered by barber and service',
+        summary: 'Get available time slots',
+        tags: ['Barbershop'],
+        parameters: [
+            new OA\Parameter(name: 'slug', in: 'path', required: true, schema: new OA\Schema(type: 'string')),
+            new OA\Parameter(name: 'date', in: 'query', required: true, schema: new OA\Schema(type: 'string', format: 'date', example: '2026-04-25')),
+            new OA\Parameter(name: 'barber_id', in: 'query', required: false, schema: new OA\Schema(type: 'integer')),
+            new OA\Parameter(name: 'service_id', in: 'query', required: false, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Available slots',
+                content: new OA\JsonContent(properties: [
+                    new OA\Property(property: 'success', type: 'boolean', example: true),
+                    new OA\Property(property: 'data', type: 'array', items: new OA\Items(properties: [
+                        new OA\Property(property: 'time', type: 'string', example: '09:00'),
+                        new OA\Property(property: 'available', type: 'boolean', example: true),
+                    ])),
+                ])
+            ),
+            new OA\Response(response: 404, description: 'Barbershop not found'),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ]
+    )]
+    public function availableSlots(string $slug, SlotsRequest $request, BarbershopServiceContract $service): JsonResponse
+    {
+        return $service->availableSlots($slug, $request);
     }
 }
