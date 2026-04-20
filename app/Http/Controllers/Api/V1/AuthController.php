@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Contracts\Services\Http\Api\V1\AuthServiceContract;
+use App\Http\Requests\Api\V1\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Api\V1\Auth\GoogleLoginRequest;
 use App\Http\Requests\Api\V1\Auth\LoginRequest;
 use App\Http\Requests\Api\V1\Auth\RegisterRequest;
 use App\Http\Requests\Api\V1\Auth\ResendCodeRequest;
+use App\Http\Requests\Api\V1\Auth\ResetPasswordRequest;
 use App\Http\Requests\Api\V1\Auth\VerifyEmailRequest;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Attributes as OA;
@@ -355,5 +357,72 @@ class AuthController extends Controller
     public function resendCode(ResendCodeRequest $request, AuthServiceContract $service): JsonResponse
     {
         return $service->resendCode($request);
+    }
+
+    /**
+     * @param ForgotPasswordRequest $request
+     * @param AuthServiceContract   $service
+     *
+     * @return JsonResponse
+     */
+    #[OA\Post(
+        path: '/auth/forgot-password',
+        operationId: 'authForgotPassword',
+        description: 'Sends password reset OTP code to email',
+        summary: 'Forgot password',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['email'],
+                properties: [
+                    new OA\Property(property: 'email', type: 'string', format: 'email', example: 'user@example.com'),
+                ]
+            )
+        ),
+        tags: ['Auth'],
+        responses: [
+            new OA\Response(response: 200, description: 'Reset code sent'),
+            new OA\Response(response: 404, description: 'User not found'),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ]
+    )]
+    public function forgotPassword(ForgotPasswordRequest $request, AuthServiceContract $service): JsonResponse
+    {
+        return $service->forgotPassword($request);
+    }
+
+    /**
+     * @param ResetPasswordRequest $request
+     * @param AuthServiceContract  $service
+     *
+     * @return JsonResponse
+     */
+    #[OA\Post(
+        path: '/auth/reset-password',
+        operationId: 'authResetPassword',
+        description: 'Resets password using OTP code sent to email',
+        summary: 'Reset password',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['email', 'code', 'password', 'password_confirmation'],
+                properties: [
+                    new OA\Property(property: 'email', type: 'string', format: 'email'),
+                    new OA\Property(property: 'code', type: 'string', example: '1234', maxLength: 4, minLength: 4),
+                    new OA\Property(property: 'password', type: 'string', format: 'password', minLength: 8),
+                    new OA\Property(property: 'password_confirmation', type: 'string', format: 'password'),
+                ]
+            )
+        ),
+        tags: ['Auth'],
+        responses: [
+            new OA\Response(response: 200, description: 'Password reset'),
+            new OA\Response(response: 404, description: 'User not found'),
+            new OA\Response(response: 422, description: 'Invalid code or expired'),
+        ]
+    )]
+    public function resetPassword(ResetPasswordRequest $request, AuthServiceContract $service): JsonResponse
+    {
+        return $service->resetPassword($request);
     }
 }

@@ -35,4 +35,12 @@ interface UserRepositoryContract
      * @return void
      */
     public function deleteCurrentToken(User $user): void;
+
+    /**
+     * @param User  $user
+     * @param array $data
+     *
+     * @return User
+     */
+    public function update(User $user, array $data): User;
 }

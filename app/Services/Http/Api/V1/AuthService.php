@@ -10,10 +10,12 @@ use App\Dto\Services\Http\V1\Auth\LoginDto;
 use App\Dto\Services\Http\V1\Auth\RegisterDto;
 use App\Dto\Services\Http\V1\Auth\ResendCodeDto;
 use App\Dto\Services\Http\V1\Auth\VerifyEmailDto;
+use App\Http\Requests\Api\V1\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Api\V1\Auth\GoogleLoginRequest;
 use App\Http\Requests\Api\V1\Auth\LoginRequest;
 use App\Http\Requests\Api\V1\Auth\RegisterRequest;
 use App\Http\Requests\Api\V1\Auth\ResendCodeRequest;
+use App\Http\Requests\Api\V1\Auth\ResetPasswordRequest;
 use App\Http\Requests\Api\V1\Auth\VerifyEmailRequest;
 use App\Http\Resources\Api\V1\Auth\TokenResource;
 use App\Http\Resources\Api\V1\Auth\UserResource;
@@ -188,5 +190,61 @@ class AuthService implements AuthServiceContract
         Mail::to($dto->email)->queue(new OtpCodeMail($otpCode));
 
         return $this->success(null, 'Verification code resent');
+    }
+
+    /**
+     * @param ForgotPasswordRequest $request
+     *
+     * @return JsonResponse
+     * @throws \Random\RandomException
+     */
+    public function forgotPassword(ForgotPasswordRequest $request): JsonResponse
+    {
+        $user = $this->userRepository->findByEmail($request->input('email'));
+
+        if (!$user) {
+            return $this->error('User not found', 'not_found', 404);
+        }
+
+        $otpCode = str_pad(random_int(0, 9999), 4, '0', STR_PAD_LEFT);
+
+        $this->userRepository->update($user, [
+            'reset_otp_code'       => $otpCode,
+            'reset_otp_expires_at' => Carbon::now()->addMinutes(15),
+        ]);
+
+        Mail::to($user->email)->queue(new OtpCodeMail($otpCode));
+
+        return $this->success(null, 'Password reset code sent to email');
+    }
+
+    /**
+     * @param ResetPasswordRequest $request
+     *
+     * @return JsonResponse
+     */
+    public function resetPassword(ResetPasswordRequest $request): JsonResponse
+    {
+        $user = $this->userRepository->findByEmail($request->input('email'));
+
+        if (!$user) {
+            return $this->error('User not found', 'not_found', 404);
+        }
+
+        if ($user->reset_otp_code !== $request->input('code')) {
+            return $this->error('Invalid code', 'invalid_code', 422);
+        }
+
+        if (!$user->reset_otp_expires_at || Carbon::parse($user->reset_otp_expires_at)->isPast()) {
+            return $this->error('Code has expired', 'code_expired', 422);
+        }
+
+        $this->userRepository->update($user, [
+            'password'             => Hash::make($request->input('password')),
+            'reset_otp_code'       => null,
+            'reset_otp_expires_at' => null,
+        ]);
+
+        return $this->success(null, 'Password reset successful');
     }
 }

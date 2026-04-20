@@ -3,8 +3,10 @@
 namespace App\Contracts\Services\Http\Api\V1;
 
 use Illuminate\Http\JsonResponse;
+use App\Http\Requests\Api\V1\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Api\V1\Auth\RegisterRequest;
 use App\Http\Requests\Api\V1\Auth\LoginRequest;
+use App\Http\Requests\Api\V1\Auth\ResetPasswordRequest;
 use App\Http\Requests\Api\V1\Auth\VerifyEmailRequest;
 use App\Http\Requests\Api\V1\Auth\GoogleLoginRequest;
 use App\Http\Requests\Api\V1\Auth\ResendCodeRequest;
@@ -56,4 +58,18 @@ interface AuthServiceContract
      * @return \Illuminate\Http\JsonResponse
      */
     public function resendCode(ResendCodeRequest $request): JsonResponse;
+
+    /**
+     * @param ForgotPasswordRequest $request
+     *
+     * @return JsonResponse
+     */
+    public function forgotPassword(ForgotPasswordRequest $request): JsonResponse;
+
+    /**
+     * @param ResetPasswordRequest $request
+     *
+     * @return JsonResponse
+     */
+    public function resetPassword(ResetPasswordRequest $request): JsonResponse;
 }
