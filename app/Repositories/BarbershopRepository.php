@@ -33,8 +33,10 @@ class BarbershopRepository implements BarbershopRepositoryContract
             ->withCount('reviews');
 
         if ($userLat !== null && $userLng !== null) {
-            $haversine = '(6371 * acos(cos(radians(?)) * cos(radians(latitude)) * cos(radians(longitude) - radians(?)) + sin(radians(?)) * sin(radians(latitude))))';
-            $query->selectRaw("*, {$haversine} AS distance_km", [$userLat, $userLng, $userLat]);
+            $lat = (float) $userLat;
+            $lng = (float) $userLng;
+            $haversine = "(6371 * acos(cos(radians({$lat})) * cos(radians(latitude)) * cos(radians(longitude) - radians({$lng})) + sin(radians({$lat})) * sin(radians(latitude))))";
+            $query->addSelect('barbershops.*')->selectRaw("{$haversine} AS distance_km");
         }
 
         if ($search !== null) {

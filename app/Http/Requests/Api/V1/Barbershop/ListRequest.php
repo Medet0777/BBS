@@ -16,6 +16,18 @@ class ListRequest extends FormRequest
     }
 
     /**
+     * @return void
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->has('is_open')) {
+            $this->merge([
+                'is_open' => filter_var($this->input('is_open'), FILTER_VALIDATE_BOOLEAN),
+            ]);
+        }
+    }
+
+    /**
      * @return array
      */
     public function rules(): array
