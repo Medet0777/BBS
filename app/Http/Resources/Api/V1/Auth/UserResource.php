@@ -20,11 +20,15 @@ class UserResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $ownedBarbershop = \App\Models\Barbershop::where('owner_id', $this->id)->first(['id', 'slug']);
+
         return [
             'id'                => $this->id,
             'name'              => $this->name,
             'email'             => $this->email,
             'email_verified_at' => $this->email_verified_at,
+            'barbershop_id'     => $ownedBarbershop?->id,
+            'barbershop_slug'   => $ownedBarbershop?->slug,
         ];
     }
 }

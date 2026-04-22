@@ -670,6 +670,105 @@
                 }
             }
         },
+        "/auth/forgot-password": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Forgot password",
+                "description": "Sends password reset OTP code to email",
+                "operationId": "authForgotPassword",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "user@example.com"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Reset code sent"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/auth/reset-password": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Reset password",
+                "description": "Resets password using OTP code sent to email",
+                "operationId": "authResetPassword",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "code",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    },
+                                    "code": {
+                                        "type": "string",
+                                        "example": "1234",
+                                        "maxLength": 4,
+                                        "minLength": 4
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "minLength": 8
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "format": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password reset"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    },
+                    "422": {
+                        "description": "Invalid code or expired"
+                    }
+                }
+            }
+        },
         "/barbershops": {
             "get": {
                 "tags": [
@@ -813,6 +912,16 @@
                                                                     "closed"
                                                                 ]
                                                             },
+                                                            "min_price": {
+                                                                "type": "integer",
+                                                                "example": 1500,
+                                                                "nullable": true
+                                                            },
+                                                            "min_price_display": {
+                                                                "type": "string",
+                                                                "example": "от 1500 ₸",
+                                                                "nullable": true
+                                                            },
                                                             "distance_km": {
                                                                 "type": "number",
                                                                 "format": "float",
@@ -948,6 +1057,16 @@
                                                     "type": "integer",
                                                     "example": 312
                                                 },
+                                                "min_price": {
+                                                    "type": "integer",
+                                                    "example": 1500,
+                                                    "nullable": true
+                                                },
+                                                "min_price_display": {
+                                                    "type": "string",
+                                                    "example": "от 1500 ₸",
+                                                    "nullable": true
+                                                },
                                                 "opens_at": {
                                                     "type": "string",
                                                     "example": "09:00"
@@ -1048,9 +1167,12 @@
                                                                             "example": "Классическая стрижка"
                                                                         },
                                                                         "price": {
-                                                                            "type": "number",
-                                                                            "format": "float",
+                                                                            "type": "integer",
                                                                             "example": 1500
+                                                                        },
+                                                                        "price_display": {
+                                                                            "type": "string",
+                                                                            "example": "1500 ₸"
                                                                         },
                                                                         "duration_minutes": {
                                                                             "type": "integer",
@@ -1096,6 +1218,92 @@
                                 }
                             }
                         }
+                    }
+                }
+            }
+        },
+        "/barbershops/{slug}/available-slots": {
+            "get": {
+                "tags": [
+                    "Barbershop"
+                ],
+                "summary": "Get available time slots",
+                "description": "Returns available time slots for a given date, optionally filtered by barber and service",
+                "operationId": "barbershopAvailableSlots",
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "date",
+                            "example": "2026-04-25"
+                        }
+                    },
+                    {
+                        "name": "barber_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "service_id",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Available slots",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "time": {
+                                                        "type": "string",
+                                                        "example": "09:00"
+                                                    },
+                                                    "available": {
+                                                        "type": "boolean",
+                                                        "example": true
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Barbershop not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
                     }
                 }
             }
@@ -1841,6 +2049,320 @@
                     },
                     "422": {
                         "description": "Validation error (invalid range or > 31 days)"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/owner/bookings": {
+            "get": {
+                "tags": [
+                    "Owner"
+                ],
+                "summary": "List owner bookings",
+                "description": "Paginated list of bookings for the owner`s barbershop with optional status filter",
+                "operationId": "ownerBookings",
+                "parameters": [
+                    {
+                        "name": "filter",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "all",
+                                "pending",
+                                "confirmed",
+                                "cancelled",
+                                "completed"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 15
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Bookings list"
+                    },
+                    "403": {
+                        "description": "Not an owner"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/owner/bookings/{id}/cancel": {
+            "post": {
+                "tags": [
+                    "Owner"
+                ],
+                "summary": "Cancel booking",
+                "description": "Cancels a pending or confirmed booking at the owner`s barbershop",
+                "operationId": "ownerCancelBooking",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Booking cancelled"
+                    },
+                    "403": {
+                        "description": "Not an owner"
+                    },
+                    "404": {
+                        "description": "Booking not found"
+                    },
+                    "422": {
+                        "description": "Invalid status"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/owner/bookings/{id}/complete": {
+            "post": {
+                "tags": [
+                    "Owner"
+                ],
+                "summary": "Complete booking",
+                "description": "Marks a confirmed booking as completed",
+                "operationId": "ownerCompleteBooking",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Booking completed"
+                    },
+                    "403": {
+                        "description": "Not an owner"
+                    },
+                    "404": {
+                        "description": "Booking not found"
+                    },
+                    "422": {
+                        "description": "Invalid status"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/owner/services": {
+            "get": {
+                "tags": [
+                    "Owner"
+                ],
+                "summary": "List owner services",
+                "description": "List all services of the owner`s barbershop",
+                "operationId": "ownerListServices",
+                "responses": {
+                    "200": {
+                        "description": "Services list"
+                    },
+                    "403": {
+                        "description": "Not an owner"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Owner"
+                ],
+                "summary": "Create service",
+                "description": "Create a new service for the owner`s barbershop",
+                "operationId": "ownerCreateService",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "category_name",
+                                    "price",
+                                    "duration_minutes"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Классическая стрижка"
+                                    },
+                                    "category_name": {
+                                        "type": "string",
+                                        "example": "Стрижки"
+                                    },
+                                    "price": {
+                                        "type": "integer",
+                                        "example": 1500
+                                    },
+                                    "duration_minutes": {
+                                        "type": "integer",
+                                        "example": 30
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Service created"
+                    },
+                    "403": {
+                        "description": "Not an owner"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/owner/services/{id}": {
+            "put": {
+                "tags": [
+                    "Owner"
+                ],
+                "summary": "Update service",
+                "description": "Update an existing service",
+                "operationId": "ownerUpdateService",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "category_name": {
+                                        "type": "string"
+                                    },
+                                    "price": {
+                                        "type": "integer"
+                                    },
+                                    "duration_minutes": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Service updated"
+                    },
+                    "403": {
+                        "description": "Not an owner"
+                    },
+                    "404": {
+                        "description": "Service not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Owner"
+                ],
+                "summary": "Delete service",
+                "description": "Delete a service. Will fail if there are pending or confirmed bookings for it.",
+                "operationId": "ownerDeleteService",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Service deleted"
+                    },
+                    "403": {
+                        "description": "Not an owner"
+                    },
+                    "404": {
+                        "description": "Service not found"
+                    },
+                    "422": {
+                        "description": "Service has active bookings"
                     }
                 },
                 "security": [

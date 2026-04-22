@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Contracts\Services\Http\Api\V1\OwnerServiceContract;
+use App\Http\Requests\Api\V1\Owner\BookingListRequest;
 use App\Http\Requests\Api\V1\Owner\CalendarRequest;
+use App\Http\Requests\Api\V1\Owner\ServiceStoreRequest;
+use App\Http\Requests\Api\V1\Owner\ServiceUpdateRequest;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Attributes as OA;
 
@@ -118,5 +121,214 @@ class OwnerController extends Controller
     public function calendar(CalendarRequest $request, OwnerServiceContract $service): JsonResponse
     {
         return $service->calendar($request);
+    }
+
+    /**
+     * @param BookingListRequest   $request
+     * @param OwnerServiceContract $service
+     *
+     * @return JsonResponse
+     */
+    #[OA\Get(
+        path: '/owner/bookings',
+        operationId: 'ownerBookings',
+        description: 'Paginated list of bookings for the owner`s barbershop with optional status filter',
+        summary: 'List owner bookings',
+        security: [['bearerAuth' => []]],
+        tags: ['Owner'],
+        parameters: [
+            new OA\Parameter(name: 'filter', in: 'query', required: false, schema: new OA\Schema(type: 'string', enum: ['all', 'pending', 'confirmed', 'cancelled', 'completed'])),
+            new OA\Parameter(name: 'per_page', in: 'query', required: false, schema: new OA\Schema(type: 'integer', default: 15)),
+            new OA\Parameter(name: 'page', in: 'query', required: false, schema: new OA\Schema(type: 'integer', default: 1)),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Bookings list'),
+            new OA\Response(response: 403, description: 'Not an owner'),
+        ]
+    )]
+    public function bookings(BookingListRequest $request, OwnerServiceContract $service): JsonResponse
+    {
+        return $service->bookings($request);
+    }
+
+    /**
+     * @param int                  $id
+     * @param OwnerServiceContract $service
+     *
+     * @return JsonResponse
+     */
+    #[OA\Post(
+        path: '/owner/bookings/{id}/cancel',
+        operationId: 'ownerCancelBooking',
+        description: 'Cancels a pending or confirmed booking at the owner`s barbershop',
+        summary: 'Cancel booking',
+        security: [['bearerAuth' => []]],
+        tags: ['Owner'],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Booking cancelled'),
+            new OA\Response(response: 403, description: 'Not an owner'),
+            new OA\Response(response: 404, description: 'Booking not found'),
+            new OA\Response(response: 422, description: 'Invalid status'),
+        ]
+    )]
+    public function cancelBooking(int $id, OwnerServiceContract $service): JsonResponse
+    {
+        return $service->cancelBooking($id);
+    }
+
+    /**
+     * @param int                  $id
+     * @param OwnerServiceContract $service
+     *
+     * @return JsonResponse
+     */
+    #[OA\Post(
+        path: '/owner/bookings/{id}/complete',
+        operationId: 'ownerCompleteBooking',
+        description: 'Marks a confirmed booking as completed',
+        summary: 'Complete booking',
+        security: [['bearerAuth' => []]],
+        tags: ['Owner'],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Booking completed'),
+            new OA\Response(response: 403, description: 'Not an owner'),
+            new OA\Response(response: 404, description: 'Booking not found'),
+            new OA\Response(response: 422, description: 'Invalid status'),
+        ]
+    )]
+    public function completeBooking(int $id, OwnerServiceContract $service): JsonResponse
+    {
+        return $service->completeBooking($id);
+    }
+
+    /**
+     * @param OwnerServiceContract $service
+     *
+     * @return JsonResponse
+     */
+    #[OA\Get(
+        path: '/owner/services',
+        operationId: 'ownerListServices',
+        description: 'List all services of the owner`s barbershop',
+        summary: 'List owner services',
+        security: [['bearerAuth' => []]],
+        tags: ['Owner'],
+        responses: [
+            new OA\Response(response: 200, description: 'Services list'),
+            new OA\Response(response: 403, description: 'Not an owner'),
+        ]
+    )]
+    public function listServices(OwnerServiceContract $service): JsonResponse
+    {
+        return $service->listServices();
+    }
+
+    /**
+     * @param ServiceStoreRequest  $request
+     * @param OwnerServiceContract $service
+     *
+     * @return JsonResponse
+     */
+    #[OA\Post(
+        path: '/owner/services',
+        operationId: 'ownerCreateService',
+        description: 'Create a new service for the owner`s barbershop',
+        summary: 'Create service',
+        security: [['bearerAuth' => []]],
+        tags: ['Owner'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['name', 'category_name', 'price', 'duration_minutes'],
+                properties: [
+                    new OA\Property(property: 'name', type: 'string', example: 'Классическая стрижка'),
+                    new OA\Property(property: 'category_name', type: 'string', example: 'Стрижки'),
+                    new OA\Property(property: 'price', type: 'integer', example: 1500),
+                    new OA\Property(property: 'duration_minutes', type: 'integer', example: 30),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 201, description: 'Service created'),
+            new OA\Response(response: 403, description: 'Not an owner'),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ]
+    )]
+    public function createService(ServiceStoreRequest $request, OwnerServiceContract $service): JsonResponse
+    {
+        return $service->createService($request);
+    }
+
+    /**
+     * @param int                  $id
+     * @param ServiceUpdateRequest $request
+     * @param OwnerServiceContract $service
+     *
+     * @return JsonResponse
+     */
+    #[OA\Put(
+        path: '/owner/services/{id}',
+        operationId: 'ownerUpdateService',
+        description: 'Update an existing service',
+        summary: 'Update service',
+        security: [['bearerAuth' => []]],
+        tags: ['Owner'],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: 'name', type: 'string'),
+                    new OA\Property(property: 'category_name', type: 'string'),
+                    new OA\Property(property: 'price', type: 'integer'),
+                    new OA\Property(property: 'duration_minutes', type: 'integer'),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'Service updated'),
+            new OA\Response(response: 403, description: 'Not an owner'),
+            new OA\Response(response: 404, description: 'Service not found'),
+        ]
+    )]
+    public function updateService(int $id, ServiceUpdateRequest $request, OwnerServiceContract $service): JsonResponse
+    {
+        return $service->updateService($id, $request);
+    }
+
+    /**
+     * @param int                  $id
+     * @param OwnerServiceContract $service
+     *
+     * @return JsonResponse
+     */
+    #[OA\Delete(
+        path: '/owner/services/{id}',
+        operationId: 'ownerDeleteService',
+        description: 'Delete a service. Will fail if there are pending or confirmed bookings for it.',
+        summary: 'Delete service',
+        security: [['bearerAuth' => []]],
+        tags: ['Owner'],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Service deleted'),
+            new OA\Response(response: 403, description: 'Not an owner'),
+            new OA\Response(response: 404, description: 'Service not found'),
+            new OA\Response(response: 422, description: 'Service has active bookings'),
+        ]
+    )]
+    public function deleteService(int $id, OwnerServiceContract $service): JsonResponse
+    {
+        return $service->deleteService($id);
     }
 }
