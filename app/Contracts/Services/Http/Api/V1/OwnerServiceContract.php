@@ -46,6 +46,13 @@ interface OwnerServiceContract
     public function completeBooking(int $id): JsonResponse;
 
     /**
+     * @param int $id
+     *
+     * @return JsonResponse
+     */
+    public function confirmBooking(int $id): JsonResponse;
+
+    /**
      * @return JsonResponse
      */
     public function listServices(): JsonResponse;

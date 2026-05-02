@@ -209,6 +209,34 @@ class OwnerController extends Controller
     }
 
     /**
+     * @param int                  $id
+     * @param OwnerServiceContract $service
+     *
+     * @return JsonResponse
+     */
+    #[OA\Post(
+        path: '/owner/bookings/{id}/confirm',
+        operationId: 'ownerConfirmBooking',
+        description: 'Confirms a pending booking',
+        summary: 'Confirm booking',
+        security: [['bearerAuth' => []]],
+        tags: ['Owner'],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Booking confirmed'),
+            new OA\Response(response: 403, description: 'Not an owner'),
+            new OA\Response(response: 404, description: 'Booking not found'),
+            new OA\Response(response: 422, description: 'Only pending bookings can be confirmed'),
+        ]
+    )]
+    public function confirmBooking(int $id, OwnerServiceContract $service): JsonResponse
+    {
+        return $service->confirmBooking($id);
+    }
+
+    /**
      * @param OwnerServiceContract $service
      *
      * @return JsonResponse

@@ -11,6 +11,7 @@ Route::middleware('auth:sanctum')->prefix('owner')->group(function () {
     Route::get('/bookings', [OwnerController::class, 'bookings']);
     Route::post('/bookings/{id}/cancel', [OwnerController::class, 'cancelBooking']);
     Route::post('/bookings/{id}/complete', [OwnerController::class, 'completeBooking']);
+    Route::post('/bookings/{id}/confirm', [OwnerController::class, 'confirmBooking']);
 
     Route::get('/services', [OwnerController::class, 'listServices']);
     Route::post('/services', [OwnerController::class, 'createService']);

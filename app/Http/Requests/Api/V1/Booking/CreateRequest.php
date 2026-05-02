@@ -22,12 +22,22 @@ class CreateRequest extends FormRequest
     {
         return [
             'barbershop_id'    => 'required|integer|exists:barbershops,id',
-            'barber_id'        => 'required|integer|exists:barbers,id',
+            'barber_id'        => 'nullable|integer|exists:barbers,id',
             'scheduled_at'     => 'required|date|after:now',
             'service_ids'      => 'required|array|min:1',
             'service_ids.*'    => 'integer|exists:services,id',
             'comment'          => 'nullable|string|max:1000',
             'reminder_enabled' => 'nullable|boolean',
         ];
+    }
+
+    /**
+     * @return void
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->input('barber_id') === 0 || $this->input('barber_id') === '0') {
+            $this->merge(['barber_id' => null]);
+        }
     }
 }

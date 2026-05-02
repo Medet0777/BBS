@@ -37,17 +37,9 @@ class BookingService implements BookingServiceContract
     public function create(CreateRequest $request): JsonResponse
     {
         $barbershopId = $request->integer('barbershop_id');
-        $barberId     = $request->integer('barber_id');
+        $barberId     = $request->filled('barber_id') ? $request->integer('barber_id') : null;
         $serviceIds   = $request->input('service_ids');
-
-        $barber = Barber::where('id', $barberId)
-            ->where('barbershop_id', $barbershopId)
-            ->where('is_active', true)
-            ->first();
-
-        if (!$barber) {
-            return $this->error('Barber does not belong to this barbershop', 'invalid_barber', 422);
-        }
+        $scheduledAt  = $request->input('scheduled_at');
 
         $services = $this->bookingRepository->getServicesByIds($serviceIds);
 
@@ -72,11 +64,30 @@ class BookingService implements BookingServiceContract
             ];
         }
 
+        if ($barberId === null) {
+            $barber = $this->findAvailableBarber($barbershopId, $scheduledAt, $totalDuration);
+
+            if (!$barber) {
+                return $this->error('No available barber at this time', 'no_available_barber', 422);
+            }
+
+            $barberId = $barber->id;
+        } else {
+            $barber = Barber::where('id', $barberId)
+                ->where('barbershop_id', $barbershopId)
+                ->where('is_active', true)
+                ->first();
+
+            if (!$barber) {
+                return $this->error('Barber does not belong to this barbershop', 'invalid_barber', 422);
+            }
+        }
+
         $booking = $this->bookingRepository->create([
             'user_id'                => auth()->id(),
             'barbershop_id'          => $barbershopId,
             'barber_id'              => $barberId,
-            'scheduled_at'           => $request->input('scheduled_at'),
+            'scheduled_at'           => $scheduledAt,
             'status'                 => BookingStatus::Pending->value,
             'comment'                => $request->input('comment'),
             'reminder_enabled'       => $request->boolean('reminder_enabled'),
@@ -171,5 +182,37 @@ class BookingService implements BookingServiceContract
         ]);
 
         return $this->success(new CreateResource($booking), 'Booking rescheduled');
+    }
+
+    /**
+     * @param int    $barbershopId
+     * @param string $scheduledAt
+     * @param int    $duration
+     *
+     * @return Barber|null
+     */
+    private function findAvailableBarber(int $barbershopId, string $scheduledAt, int $duration): ?Barber
+    {
+        $start = Carbon::parse($scheduledAt);
+        $end   = $start->copy()->addMinutes($duration);
+
+        $barbers = Barber::where('barbershop_id', $barbershopId)
+            ->where('is_active', true)
+            ->orderBy('id')
+            ->get();
+
+        foreach ($barbers as $barber) {
+            $hasOverlap = \App\Models\Booking::where('barber_id', $barber->id)
+                ->whereNotIn('status', [BookingStatus::Cancelled->value])
+                ->where('scheduled_at', '<', $end)
+                ->whereRaw('DATE_ADD(scheduled_at, INTERVAL total_duration_minutes MINUTE) > ?', [$start])
+                ->exists();
+
+            if (!$hasOverlap) {
+                return $barber;
+            }
+        }
+
+        return null;
     }
 }

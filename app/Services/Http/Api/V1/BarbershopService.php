@@ -79,7 +79,6 @@ class BarbershopService implements BarbershopServiceContract
         $barberId  = $request->filled('barber_id') ? $request->integer('barber_id') : null;
         $serviceId = $request->filled('service_id') ? $request->integer('service_id') : null;
 
-        // 0. Determine requested service duration (default 30 min slot)
         $slotDuration = 30;
         if ($serviceId) {
             $service = Service::find($serviceId);
@@ -88,7 +87,6 @@ class BarbershopService implements BarbershopServiceContract
             }
         }
 
-        // 1. Build all slots from opens_at to closes_at in 30-min steps
         $slots   = [];
         $cursor  = Carbon::parse($date . ' ' . $barbershop->opens_at);
         $closeAt = Carbon::parse($date . ' ' . $barbershop->closes_at);
@@ -99,10 +97,8 @@ class BarbershopService implements BarbershopServiceContract
             $cursor->addMinutes(30);
         }
 
-        // 2. Load existing bookings for the date/barber
         $bookings = $this->barbershopRepository->getBookingsForDate($barbershop->id, $date, $barberId);
 
-        // 3. Mark slot availability: not in past AND no booking overlap
         $result = [];
         foreach ($slots as $slotStart) {
             $slotEnd   = $slotStart->copy()->addMinutes($slotDuration);

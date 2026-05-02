@@ -34,7 +34,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // Repositories
         $this->app->bind(UserRepositoryContract::class, UserRepository::class);
         $this->app->bind(PendingRegistrationRepositoryContract::class, PendingRegistrationRepository::class);
         $this->app->bind(BarbershopRepositoryContract::class, BarbershopRepository::class);
@@ -42,7 +41,6 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(BookingRepositoryContract::class, BookingRepository::class);
         $this->app->bind(OwnerRepositoryContract::class, OwnerRepository::class);
 
-        // Services
         $this->app->bind(AuthServiceContract::class, AuthService::class);
         $this->app->bind(BarbershopServiceContract::class, BarbershopService::class);
         $this->app->bind(ReviewServiceContract::class, ReviewService::class);

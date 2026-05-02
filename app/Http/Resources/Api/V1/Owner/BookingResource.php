@@ -25,8 +25,10 @@ class BookingResource extends JsonResource
         return [
             'id'             => $this->id,
             'client_name'    => $this->user?->name,
+            'client_phone'   => $this->user?->phone,
             'barber_name'    => $this->barber?->name,
             'service_name'   => $firstService?->name,
+            'services'       => $this->services->map(fn ($s) => ['id' => $s->id, 'name' => $s->name])->values(),
             'services_count' => $this->services->count(),
             'scheduled_at'   => $this->scheduled_at,
             'total_price'    => (int) $this->total_price,

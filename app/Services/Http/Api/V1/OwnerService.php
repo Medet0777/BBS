@@ -132,12 +132,16 @@ class OwnerService implements OwnerServiceContract
                 'date'     => $date,
                 'count'    => $dayBookings->count(),
                 'bookings' => $dayBookings->map(fn ($booking) => [
-                    'id'           => $booking->id,
-                    'client_name'  => $booking->user?->name,
-                    'barber_name'  => $booking->barber?->name,
-                    'scheduled_at' => $booking->scheduled_at,
-                    'total_price'  => $booking->total_price,
-                    'status'       => $booking->status->value,
+                    'id'             => $booking->id,
+                    'client_name'    => $booking->user?->name,
+                    'client_phone'   => $booking->user?->phone,
+                    'barber_name'    => $booking->barber?->name,
+                    'service_name'   => $booking->services->first()?->name,
+                    'services'       => $booking->services->map(fn ($s) => ['id' => $s->id, 'name' => $s->name])->values(),
+                    'services_count' => $booking->services->count(),
+                    'scheduled_at'   => $booking->scheduled_at,
+                    'total_price'    => $booking->total_price,
+                    'status'         => $booking->status->value,
                 ])->values(),
             ])
             ->values();
@@ -226,6 +230,37 @@ class OwnerService implements OwnerServiceContract
         }
 
         $booking = $this->ownerRepository->updateBooking($booking, ['status' => BookingStatus::Completed->value]);
+
+        return $this->success([
+            'id'     => $booking->id,
+            'status' => $booking->status->value,
+        ]);
+    }
+
+    /**
+     * @param int $id
+     *
+     * @return JsonResponse
+     */
+    public function confirmBooking(int $id): JsonResponse
+    {
+        $barbershop = $this->ownerRepository->findBarbershopByOwner(auth()->id());
+
+        if (!$barbershop) {
+            return $this->error('You do not own any barbershop', 'not_an_owner', 403);
+        }
+
+        $booking = $this->ownerRepository->findBookingByBarbershop($id, $barbershop->id);
+
+        if (!$booking) {
+            return $this->error('Booking not found', 'not_found', 404);
+        }
+
+        if ($booking->status !== BookingStatus::Pending) {
+            return $this->error('Only pending bookings can be confirmed', 'invalid_status', 422);
+        }
+
+        $booking = $this->ownerRepository->updateBooking($booking, ['status' => BookingStatus::Confirmed->value]);
 
         return $this->success([
             'id'     => $booking->id,
@@ -355,7 +390,6 @@ class OwnerService implements OwnerServiceContract
         $period           = $request->input('period', 'week');
         $excludeCancelled = [BookingStatus::Cancelled->value];
 
-        // 0. Resolve current and previous range based on period
         $now = Carbon::now();
         switch ($period) {
             case 'month':
@@ -379,23 +413,34 @@ class OwnerService implements OwnerServiceContract
 
         $cFrom = $currentFrom->toDateTimeString();
         $cTo   = $currentTo->toDateTimeString();
+        $pFrom = $prevFrom->toDateTimeString();
+        $pTo   = $prevTo->toDateTimeString();
 
-        // 1. Aggregate stats
-        $totalRevenue   = $this->ownerRepository->sumRevenueInRange($barbershop->id, $cFrom, $cTo, $excludeCancelled);
-        $totalBookings  = $this->ownerRepository->countBookingsInRange($barbershop->id, $cFrom, $cTo, $excludeCancelled);
-        $newClients     = $this->ownerRepository->countNewClientsInRange($barbershop->id, $cFrom, $cTo, $excludeCancelled);
+        $totalRevenue  = $this->ownerRepository->sumRevenueInRange($barbershop->id, $cFrom, $cTo, $excludeCancelled);
+        $totalBookings = $this->ownerRepository->countBookingsInRange($barbershop->id, $cFrom, $cTo, $excludeCancelled);
+        $newClients    = $this->ownerRepository->countNewClientsInRange($barbershop->id, $cFrom, $cTo, $excludeCancelled);
+        $averageCheck  = $totalBookings > 0 ? round($totalRevenue / $totalBookings, 2) : 0;
 
-        // 2. Build chart data points by period type
+        $prevRevenue       = $this->ownerRepository->sumRevenueInRange($barbershop->id, $pFrom, $pTo, $excludeCancelled);
+        $prevBookings      = $this->ownerRepository->countBookingsInRange($barbershop->id, $pFrom, $pTo, $excludeCancelled);
+        $prevNewClients    = $this->ownerRepository->countNewClientsInRange($barbershop->id, $pFrom, $pTo, $excludeCancelled);
+        $prevAverageCheck  = $prevBookings > 0 ? $prevRevenue / $prevBookings : 0;
+
+        $revenueChangePct      = $this->changePercent($prevRevenue, $totalRevenue);
+        $bookingsChangePct     = $this->changePercent($prevBookings, $totalBookings);
+        $newClientsChangePct   = $this->changePercent($prevNewClients, $newClients);
+        $averageCheckChangePct = $this->changePercent($prevAverageCheck, $averageCheck);
+
         $revenueRaw  = $this->ownerRepository->revenuePerDayInRange($barbershop->id, $cFrom, $cTo, $excludeCancelled);
         $bookingsRaw = $this->ownerRepository->bookingsPerDayInRange($barbershop->id, $cFrom, $cTo, $excludeCancelled);
 
         if ($period === 'year') {
-            // 12 months — aggregate days into months
             $revenueChart  = [];
             $bookingsChart = [];
             for ($m = 1; $m <= 12; $m++) {
                 $monthStart = $now->copy()->startOfYear()->addMonths($m - 1);
-                $monthLabel = $monthStart->format('M');
+                $label      = $monthStart->format('M');
+                $monthDate  = $monthStart->toDateString();
                 $revenueSum  = 0;
                 $bookingsSum = 0;
                 foreach ($revenueRaw as $day => $value) {
@@ -408,38 +453,55 @@ class OwnerService implements OwnerServiceContract
                         $bookingsSum += $value;
                     }
                 }
-                $revenueChart[]  = ['label' => $monthLabel, 'value' => $revenueSum];
-                $bookingsChart[] = ['label' => $monthLabel, 'value' => $bookingsSum];
+                $revenueChart[]  = ['date' => $monthDate, 'label' => $label, 'amount' => $revenueSum];
+                $bookingsChart[] = ['date' => $monthDate, 'label' => $label, 'count'  => $bookingsSum];
             }
         } else {
-            // Day-by-day
             $revenueChart  = [];
             $bookingsChart = [];
             $cursor = $currentFrom->copy();
             while ($cursor <= $currentTo) {
                 $day   = $cursor->toDateString();
                 $label = $cursor->format('M j');
-                $revenueChart[]  = ['label' => $label, 'value' => $revenueRaw[$day] ?? 0];
-                $bookingsChart[] = ['label' => $label, 'value' => $bookingsRaw[$day] ?? 0];
+                $revenueChart[]  = ['date' => $day, 'label' => $label, 'amount' => $revenueRaw[$day] ?? 0];
+                $bookingsChart[] = ['date' => $day, 'label' => $label, 'count'  => $bookingsRaw[$day] ?? 0];
                 $cursor->addDay();
             }
         }
 
-        // 3. Top services
         $topServices = $this->ownerRepository->topServicesInRange($barbershop->id, $cFrom, $cTo, 5, $excludeCancelled);
 
-        // 4. Average rating from barbershop
         $avgRating = $barbershop->avg_rating !== null ? round((float) $barbershop->avg_rating, 1) : 0;
 
         return $this->success([
-            'period'         => $period,
-            'total_revenue'  => $totalRevenue,
-            'total_bookings' => $totalBookings,
-            'new_clients'    => $newClients,
-            'avg_rating'     => $avgRating,
-            'revenue_chart'  => $revenueChart,
-            'bookings_chart' => $bookingsChart,
-            'top_services'   => $topServices,
+            'period'                       => $period,
+            'total_revenue'                => $totalRevenue,
+            'revenue_change_percent'       => $revenueChangePct,
+            'total_bookings'               => $totalBookings,
+            'bookings_change_percent'      => $bookingsChangePct,
+            'new_clients'                  => $newClients,
+            'new_clients_change_percent'   => $newClientsChangePct,
+            'average_check'                => $averageCheck,
+            'average_check_change_percent' => $averageCheckChangePct,
+            'avg_rating'                   => $avgRating,
+            'revenue_chart'                => $revenueChart,
+            'bookings_chart'               => $bookingsChart,
+            'top_services'                 => $topServices,
         ]);
+    }
+
+    /**
+     * @param float $previous
+     * @param float $current
+     *
+     * @return float|null
+     */
+    private function changePercent(float $previous, float $current): ?float
+    {
+        if ($previous == 0.0) {
+            return $current > 0 ? 100.0 : null;
+        }
+
+        return round((($current - $previous) / $previous) * 100, 1);
     }
 }

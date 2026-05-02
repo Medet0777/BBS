@@ -2260,6 +2260,45 @@
                 ]
             }
         },
+        "/owner/bookings/{id}/confirm": {
+            "post": {
+                "tags": [
+                    "Owner"
+                ],
+                "summary": "Confirm booking",
+                "description": "Confirms a pending booking",
+                "operationId": "ownerConfirmBooking",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Booking confirmed"
+                    },
+                    "403": {
+                        "description": "Not an owner"
+                    },
+                    "404": {
+                        "description": "Booking not found"
+                    },
+                    "422": {
+                        "description": "Only pending bookings can be confirmed"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/owner/services": {
             "get": {
                 "tags": [

@@ -139,7 +139,7 @@ class OwnerRepository implements OwnerRepositoryContract
     {
         return Booking::where('barbershop_id', $barbershopId)
             ->whereBetween('scheduled_at', [$from, $to])
-            ->with(['user', 'barber'])
+            ->with(['user', 'barber', 'services'])
             ->orderBy('scheduled_at')
             ->get();
     }
