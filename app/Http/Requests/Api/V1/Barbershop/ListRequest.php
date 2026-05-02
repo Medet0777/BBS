@@ -34,7 +34,7 @@ class ListRequest extends FormRequest
     {
         return [
             'order_by' => 'nullable|string|in:rating,distance',
-            'per_page' => 'nullable|integer|min:1|max:100',
+            'per_page' => 'nullable|integer|min:1|max:500',
             'user_lat' => 'nullable|numeric|between:-90,90|required_with:user_lng',
             'user_lng' => 'nullable|numeric|between:-180,180|required_with:user_lat',
             'is_open'  => 'nullable|boolean',

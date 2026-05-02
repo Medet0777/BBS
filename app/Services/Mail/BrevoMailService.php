@@ -20,38 +20,46 @@ class BrevoMailService
      */
     public function send(string $toEmail, string $toName, string $subject, string $htmlContent): bool
     {
-        $apiKey = config('services.brevo.api_key');
+        $apiKey    = config('services.brevo.api_key');
+        $fromEmail = config('services.brevo.from_email');
+        $fromName  = config('services.brevo.from_name', 'BBS');
 
         if (!$apiKey) {
-            Log::warning('Brevo API key is not configured');
+            error_log('[BREVO] API key is not configured');
 
             return false;
         }
 
-        $response = Http::withHeaders([
-            'api-key'      => $apiKey,
-            'accept'       => 'application/json',
-            'content-type' => 'application/json',
-        ])->post(self::ENDPOINT, [
-            'sender' => [
-                'name'  => config('services.brevo.from_name', 'BBS'),
-                'email' => config('services.brevo.from_email'),
-            ],
-            'to' => [
-                ['email' => $toEmail, 'name' => $toName],
-            ],
-            'subject'     => $subject,
-            'htmlContent' => $htmlContent,
-        ]);
+        if (!$fromEmail) {
+            error_log('[BREVO] FROM email is not configured');
+
+            return false;
+        }
+
+        try {
+            $response = Http::timeout(15)->withHeaders([
+                'api-key'      => $apiKey,
+                'accept'       => 'application/json',
+                'content-type' => 'application/json',
+            ])->post(self::ENDPOINT, [
+                'sender' => ['name' => $fromName, 'email' => $fromEmail],
+                'to'     => [['email' => $toEmail, 'name' => $toName]],
+                'subject'     => $subject,
+                'htmlContent' => $htmlContent,
+            ]);
+        } catch (\Throwable $e) {
+            error_log('[BREVO] HTTP exception: ' . $e->getMessage());
+
+            return false;
+        }
 
         if (!$response->successful()) {
-            Log::error('Brevo email failed', [
-                'status' => $response->status(),
-                'body'   => $response->body(),
-            ]);
+            error_log('[BREVO] Email failed status=' . $response->status() . ' body=' . $response->body());
 
             return false;
         }
+
+        error_log('[BREVO] Email sent OK to ' . $toEmail);
 
         return true;
     }
