@@ -1,130 +1,210 @@
-# BBS - Barbershop Booking System
+# BBS - Barbershop Booking System (Backend)
 
-Backend for a barbershop booking app. Built with Laravel.
+Backend API for a barbershop booking app. Built with Laravel.
 
 ## What it does
 
-Lets users find barbershops, see their services, and (later) book a time slot.
-Shop owners get an admin panel to manage their shops.
+Users can find barbershops, see services and barbers, book a slot, leave reviews.
+Owners get a dashboard with stats, calendar, bookings management.
 
-The problem: small barbershops usually take orders by phone or Instagram DMs. There is no normal way to see free slots or compare shops. BBS is the backend that solves this.
+The problem: in Almaty most small barbershops take orders by phone or Instagram DMs.
+There is no normal way to see free slots or compare shops by rating and price.
+BBS solves this.
 
 ## Features
 
-Done:
-- Register / login with email + password
-- Email verification with 6-digit code
-- Google login (basic version)
-- Sanctum tokens for auth
-- List barbershops, view single barbershop
-- Admin panel (Backpack) for managing shops, services, categories, users
-- Swagger API docs
+Auth:
+- Register with email + OTP code
+- Login by email/password
+- Google login (id_token)
+- Forgot password / reset password
+- Edit profile (name, phone)
 
-Planned:
-- Booking endpoints
-- Working hours and free slots
-- Reviews
+Barbershops:
+- List with filters (search by name, sort by rating or distance, only open now)
+- Pagination
+- Distance from user (Haversine formula)
+- Detail page with services, barbers, reviews
+- Available slots for booking
+
+Bookings:
+- Create booking (multiple services, optional barber - "any" mode picks first free)
+- My bookings (upcoming / past)
+- Cancel
+- Reschedule
+- Reminder email 2 hours before (Brevo HTTP API)
+
+Reviews:
+- Leave review for barbershop
+- See my reviews
+
+Owner panel (mobile/web):
+- Dashboard with stats (today bookings, week revenue, new clients, etc)
+- Calendar (day/week/month)
+- Analytics with period selector (week/month/year) + change percent vs previous period
+- Bookings list with filter (pending/confirmed/cancelled/completed)
+- Confirm / Cancel / Complete booking
+- Services CRUD
+
+Admin panel (Backpack):
+- CRUD for: Barbershops, Service Categories, Services, Barbers, Reviews, Users
+- Owner assignment to barbershops
+
+Other:
+- Swagger API docs
+- Demo data seeder (50 real Almaty barbershops with services and barbers)
+- Sanctum tokens for auth
+- CORS for frontend on Vercel
 
 ## Tech stack
 
 - Laravel 13
-- PHP 8.3
+- PHP 8.4
 - MySQL 8
 - Laravel Sanctum (auth)
 - Backpack (admin panel)
 - L5-Swagger (API docs)
-- Repository + Service pattern
+- Spatie Laravel Data (DTOs)
+- Google API client (Google login)
+- Brevo HTTP API (transactional emails)
+- Repository + Service pattern with contracts
 
 ## Project structure
 
-Standard Laravel structure:
-
 ```
 BBS/
-├── app/             # main code: Models, Http, Services, Repositories, Dto, Contracts
-├── database/        # migrations, seeders, factories
-├── docs/            # extra documentation
-├── resources/       # views, css, js
-├── routes/          # api/v1, web, backpack
-├── tests/           # Feature + Unit
-├── README.md
-├── LICENSE
-└── AUDIT.md
+├── app/
+│   ├── Contracts/        # interfaces for repos and services
+│   ├── Enums/            # BookingStatus
+│   ├── Http/
+│   │   ├── Controllers/  # Api/V1/* and Admin/* (Backpack)
+│   │   ├── Requests/     # Form requests
+│   │   └── Resources/    # API resources
+│   ├── Jobs/             # SendBookingReminderJob
+│   ├── Mail/             # OtpCodeMail, BookingReminderMail
+│   ├── Models/           # User, Barbershop, Service, Barber, Booking, Review, etc
+│   ├── Repositories/     # data access layer
+│   └── Services/
+│       ├── Http/Api/V1/  # business logic (Auth, Barbershop, Booking, Owner, Review)
+│       └── Mail/         # BrevoMailService
+├── database/
+│   ├── migrations/
+│   └── seeders/          # DemoDataSeeder + barbershops.json
+├── docker/               # nginx, supervisord, entrypoint
+├── routes/api/v1/        # auth.php, barbershop.php, booking.php, owner.php
+├── Dockerfile
+├── docker-compose.yml
+└── README.md
 ```
 
-## Installation
+## Installation (local)
 
-Requirements: PHP 8.3, Composer, MySQL, Node.js 20+
+Requirements: PHP 8.4, Composer, MySQL 8
 
-```bash
+```
 git clone https://github.com/Medet0777/BBS.git
 cd BBS
-
 composer install
-npm install
-
 cp .env.example .env
 php artisan key:generate
 ```
 
-Open `.env` and set DB credentials and SMTP (Gmail works fine in dev).
+Edit `.env`:
+- DB credentials
+- BREVO_API_KEY and BREVO_FROM_EMAIL (for sending emails)
+- GOOGLE_CLIENT_ID (for google login)
 
-```bash
+```
 php artisan migrate --seed
+php artisan storage:link
 php artisan l5-swagger:generate
 php artisan serve
 ```
 
-In another terminal:
-```bash
-npm run dev
+Queue worker for reminders:
 ```
+php artisan queue:work
+```
+
+## Installation (Docker)
+
+```
+docker compose up --build
+```
+
+App runs on port 8080. MySQL on 3307.
+
+## Deployment
+
+Deployed on Railway. Production URL: https://bbs-production-6580.up.railway.app
 
 ## Usage
 
-Swagger docs: `http://localhost:8000/api/documentation`
-
-Admin panel: `http://localhost:8000/admin`
+Swagger: `/api/documentation`
+Admin panel: `/admin`
+API base: `/api/v1`
 
 Quick test:
-```bash
-curl http://localhost:8000/api/v1/barbershops
+```
+curl https://bbs-production-6580.up.railway.app/api/v1/barbershops
 ```
 
-Register a user:
-```bash
-curl -X POST http://localhost:8000/api/v1/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"name":"John","email":"u@example.com","password":"secret123","password_confirmation":"secret123"}'
-```
+## Demo accounts (after seeder)
 
-## API endpoints (v1)
+Password for all: `password`
 
-Auth:
-- POST `/api/v1/auth/register`
-- POST `/api/v1/auth/verify-email`
-- POST `/api/v1/auth/resend-code`
-- POST `/api/v1/auth/login`
-- POST `/api/v1/auth/google`
-- POST `/api/v1/auth/logout` (auth)
-- GET  `/api/v1/auth/me` (auth)
+- admin@bbs.kz - admin
+- owner1@bbs.kz - owner of BarbarossA barbershop
+- owner2@bbs.kz - owner of Chop-Chop barbershop
+- medet@bbs.kz - regular client
 
-Barbershops:
-- GET `/api/v1/barbershops`
-- GET `/api/v1/barbershops/{slug}`
+## API endpoints
 
-Full request and response schemas are in Swagger.
+Full list and schemas in Swagger. Short overview:
 
-## Tests
+Auth (`/api/v1/auth/*`):
+- POST register, verify-email, resend-code
+- POST login, google, logout
+- GET me, PUT me, GET me/reviews
+- POST forgot-password, reset-password
 
-```bash
-php artisan test
-```
+Barbershops (`/api/v1/barbershops`):
+- GET / (list with filters)
+- GET /{slug} (detail)
+- GET /{slug}/available-slots
+- POST /{slug}/reviews
+
+Bookings (`/api/v1/bookings`):
+- GET / (my bookings)
+- POST / (create)
+- GET /{id}
+- POST /{id}/cancel
+- POST /{id}/reschedule
+
+Owner (`/api/v1/owner/*`):
+- GET dashboard
+- GET calendar
+- GET analytics?period=week|month|year
+- GET bookings
+- POST bookings/{id}/confirm | cancel | complete
+- GET services, POST services
+- PUT services/{id}, DELETE services/{id}
+
+## Notes
+
+- All API responses wrapped in `{success, message, data}`
+- Bookings store price snapshot in pivot, so old bookings keep old price even if owner changes it later
+- Reminder email is sent via Brevo (Gmail/SMTP blocked by Railway)
+- Distance calculated with Haversine formula in SQL
 
 ## License
 
-MIT. See LICENSE.
+MIT
 
-## Author
+## Authors
 
-Medet Muratbek, SDU University
+Student IDs:
+- 230103176
+- 230103002
+- 230103282
+- 230103130
