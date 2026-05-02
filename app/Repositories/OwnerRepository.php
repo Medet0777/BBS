@@ -278,4 +278,58 @@ class OwnerRepository implements OwnerRepositoryContract
             ['sort_order' => 0],
         );
     }
+
+    /**
+     * @param int    $barbershopId
+     * @param string $from
+     * @param string $to
+     * @param array  $excludeStatuses
+     *
+     * @return array
+     */
+    public function bookingsPerDayInRange(int $barbershopId, string $from, string $to, array $excludeStatuses = []): array
+    {
+        return Booking::where('barbershop_id', $barbershopId)
+            ->whereBetween('scheduled_at', [$from, $to])
+            ->when(!empty($excludeStatuses), fn ($q) => $q->whereNotIn('status', $excludeStatuses))
+            ->select(DB::raw('DATE(scheduled_at) as day'), DB::raw('COUNT(*) as count'))
+            ->groupBy('day')
+            ->pluck('count', 'day')
+            ->map(fn ($v) => (int) $v)
+            ->toArray();
+    }
+
+    /**
+     * @param int    $barbershopId
+     * @param string $from
+     * @param string $to
+     * @param int    $limit
+     * @param array  $excludeStatuses
+     *
+     * @return array
+     */
+    public function topServicesInRange(int $barbershopId, string $from, string $to, int $limit = 5, array $excludeStatuses = []): array
+    {
+        return DB::table('booking_service')
+            ->join('bookings', 'bookings.id', '=', 'booking_service.booking_id')
+            ->join('services', 'services.id', '=', 'booking_service.service_id')
+            ->where('bookings.barbershop_id', $barbershopId)
+            ->whereBetween('bookings.scheduled_at', [$from, $to])
+            ->when(!empty($excludeStatuses), fn ($q) => $q->whereNotIn('bookings.status', $excludeStatuses))
+            ->select(
+                'services.name as name',
+                DB::raw('COUNT(*) as count'),
+                DB::raw('SUM(booking_service.price_snapshot) as revenue'),
+            )
+            ->groupBy('services.id', 'services.name')
+            ->orderByDesc('count')
+            ->limit($limit)
+            ->get()
+            ->map(fn ($row) => [
+                'name'    => $row->name,
+                'count'   => (int) $row->count,
+                'revenue' => (float) $row->revenue,
+            ])
+            ->toArray();
+    }
 }

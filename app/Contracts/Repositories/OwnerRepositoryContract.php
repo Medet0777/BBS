@@ -142,6 +142,27 @@ interface OwnerRepositoryContract
      * @param int    $barbershopId
      * @param string $from
      * @param string $to
+     * @param array  $excludeStatuses
+     *
+     * @return array
+     */
+    public function bookingsPerDayInRange(int $barbershopId, string $from, string $to, array $excludeStatuses = []): array;
+
+    /**
+     * @param int    $barbershopId
+     * @param string $from
+     * @param string $to
+     * @param int    $limit
+     * @param array  $excludeStatuses
+     *
+     * @return array
+     */
+    public function topServicesInRange(int $barbershopId, string $from, string $to, int $limit = 5, array $excludeStatuses = []): array;
+
+    /**
+     * @param int    $barbershopId
+     * @param string $from
+     * @param string $to
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */

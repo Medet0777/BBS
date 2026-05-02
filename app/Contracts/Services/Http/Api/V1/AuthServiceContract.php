@@ -7,6 +7,7 @@ use App\Http\Requests\Api\V1\Auth\ForgotPasswordRequest;
 use App\Http\Requests\Api\V1\Auth\RegisterRequest;
 use App\Http\Requests\Api\V1\Auth\LoginRequest;
 use App\Http\Requests\Api\V1\Auth\ResetPasswordRequest;
+use App\Http\Requests\Api\V1\Auth\UpdateMeRequest;
 use App\Http\Requests\Api\V1\Auth\VerifyEmailRequest;
 use App\Http\Requests\Api\V1\Auth\GoogleLoginRequest;
 use App\Http\Requests\Api\V1\Auth\ResendCodeRequest;
@@ -72,4 +73,16 @@ interface AuthServiceContract
      * @return JsonResponse
      */
     public function resetPassword(ResetPasswordRequest $request): JsonResponse;
+
+    /**
+     * @param UpdateMeRequest $request
+     *
+     * @return JsonResponse
+     */
+    public function updateMe(UpdateMeRequest $request): JsonResponse;
+
+    /**
+     * @return JsonResponse
+     */
+    public function myReviews(): JsonResponse;
 }

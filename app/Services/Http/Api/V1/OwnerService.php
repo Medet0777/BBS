@@ -5,6 +5,7 @@ namespace App\Services\Http\Api\V1;
 use App\Contracts\Repositories\OwnerRepositoryContract;
 use App\Contracts\Services\Http\Api\V1\OwnerServiceContract;
 use App\Enums\BookingStatus;
+use App\Http\Requests\Api\V1\Owner\AnalyticsRequest;
 use App\Http\Requests\Api\V1\Owner\BookingListRequest;
 use App\Http\Requests\Api\V1\Owner\CalendarRequest;
 use App\Http\Requests\Api\V1\Owner\ServiceStoreRequest;
@@ -336,5 +337,109 @@ class OwnerService implements OwnerServiceContract
         $this->ownerRepository->deleteService($service);
 
         return $this->success(null, 'Service deleted');
+    }
+
+    /**
+     * @param AnalyticsRequest $request
+     *
+     * @return JsonResponse
+     */
+    public function analytics(AnalyticsRequest $request): JsonResponse
+    {
+        $barbershop = $this->ownerRepository->findBarbershopByOwner(auth()->id());
+
+        if (!$barbershop) {
+            return $this->error('You do not own any barbershop', 'not_an_owner', 403);
+        }
+
+        $period           = $request->input('period', 'week');
+        $excludeCancelled = [BookingStatus::Cancelled->value];
+
+        // 0. Resolve current and previous range based on period
+        $now = Carbon::now();
+        switch ($period) {
+            case 'month':
+                $currentFrom = $now->copy()->startOfMonth();
+                $currentTo   = $now->copy()->endOfMonth();
+                $prevFrom    = $now->copy()->subMonth()->startOfMonth();
+                $prevTo      = $now->copy()->subMonth()->endOfMonth();
+                break;
+            case 'year':
+                $currentFrom = $now->copy()->startOfYear();
+                $currentTo   = $now->copy()->endOfYear();
+                $prevFrom    = $now->copy()->subYear()->startOfYear();
+                $prevTo      = $now->copy()->subYear()->endOfYear();
+                break;
+            default:
+                $currentFrom = $now->copy()->subDays(6)->startOfDay();
+                $currentTo   = $now->copy()->endOfDay();
+                $prevFrom    = $now->copy()->subDays(13)->startOfDay();
+                $prevTo      = $now->copy()->subDays(7)->endOfDay();
+        }
+
+        $cFrom = $currentFrom->toDateTimeString();
+        $cTo   = $currentTo->toDateTimeString();
+
+        // 1. Aggregate stats
+        $totalRevenue   = $this->ownerRepository->sumRevenueInRange($barbershop->id, $cFrom, $cTo, $excludeCancelled);
+        $totalBookings  = $this->ownerRepository->countBookingsInRange($barbershop->id, $cFrom, $cTo, $excludeCancelled);
+        $newClients     = $this->ownerRepository->countNewClientsInRange($barbershop->id, $cFrom, $cTo, $excludeCancelled);
+
+        // 2. Build chart data points by period type
+        $revenueRaw  = $this->ownerRepository->revenuePerDayInRange($barbershop->id, $cFrom, $cTo, $excludeCancelled);
+        $bookingsRaw = $this->ownerRepository->bookingsPerDayInRange($barbershop->id, $cFrom, $cTo, $excludeCancelled);
+
+        if ($period === 'year') {
+            // 12 months — aggregate days into months
+            $revenueChart  = [];
+            $bookingsChart = [];
+            for ($m = 1; $m <= 12; $m++) {
+                $monthStart = $now->copy()->startOfYear()->addMonths($m - 1);
+                $monthLabel = $monthStart->format('M');
+                $revenueSum  = 0;
+                $bookingsSum = 0;
+                foreach ($revenueRaw as $day => $value) {
+                    if (Carbon::parse($day)->month === $m) {
+                        $revenueSum += $value;
+                    }
+                }
+                foreach ($bookingsRaw as $day => $value) {
+                    if (Carbon::parse($day)->month === $m) {
+                        $bookingsSum += $value;
+                    }
+                }
+                $revenueChart[]  = ['label' => $monthLabel, 'value' => $revenueSum];
+                $bookingsChart[] = ['label' => $monthLabel, 'value' => $bookingsSum];
+            }
+        } else {
+            // Day-by-day
+            $revenueChart  = [];
+            $bookingsChart = [];
+            $cursor = $currentFrom->copy();
+            while ($cursor <= $currentTo) {
+                $day   = $cursor->toDateString();
+                $label = $cursor->format('M j');
+                $revenueChart[]  = ['label' => $label, 'value' => $revenueRaw[$day] ?? 0];
+                $bookingsChart[] = ['label' => $label, 'value' => $bookingsRaw[$day] ?? 0];
+                $cursor->addDay();
+            }
+        }
+
+        // 3. Top services
+        $topServices = $this->ownerRepository->topServicesInRange($barbershop->id, $cFrom, $cTo, 5, $excludeCancelled);
+
+        // 4. Average rating from barbershop
+        $avgRating = $barbershop->avg_rating !== null ? round((float) $barbershop->avg_rating, 1) : 0;
+
+        return $this->success([
+            'period'         => $period,
+            'total_revenue'  => $totalRevenue,
+            'total_bookings' => $totalBookings,
+            'new_clients'    => $newClients,
+            'avg_rating'     => $avgRating,
+            'revenue_chart'  => $revenueChart,
+            'bookings_chart' => $bookingsChart,
+            'top_services'   => $topServices,
+        ]);
     }
 }

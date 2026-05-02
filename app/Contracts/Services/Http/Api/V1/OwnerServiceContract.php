@@ -2,6 +2,7 @@
 
 namespace App\Contracts\Services\Http\Api\V1;
 
+use App\Http\Requests\Api\V1\Owner\AnalyticsRequest;
 use App\Http\Requests\Api\V1\Owner\BookingListRequest;
 use App\Http\Requests\Api\V1\Owner\CalendarRequest;
 use App\Http\Requests\Api\V1\Owner\ServiceStoreRequest;
@@ -70,4 +71,11 @@ interface OwnerServiceContract
      * @return JsonResponse
      */
     public function deleteService(int $id): JsonResponse;
+
+    /**
+     * @param AnalyticsRequest $request
+     *
+     * @return JsonResponse
+     */
+    public function analytics(AnalyticsRequest $request): JsonResponse;
 }

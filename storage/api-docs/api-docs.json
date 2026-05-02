@@ -587,6 +587,49 @@
                         "bearerAuth": []
                     }
                 ]
+            },
+            "put": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Update my profile",
+                "description": "Updates name and/or phone of the authenticated user. Email is not editable.",
+                "operationId": "authUpdateMe",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Yeskendir"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "+7 701 234 5678"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Profile updated"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/auth/resend-code": {
@@ -767,6 +810,29 @@
                         "description": "Invalid code or expired"
                     }
                 }
+            }
+        },
+        "/auth/me/reviews": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "My reviews",
+                "description": "Returns paginated list of reviews left by the authenticated user",
+                "operationId": "authMyReviews",
+                "responses": {
+                    "200": {
+                        "description": "Reviews list"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/barbershops": {
@@ -2363,6 +2429,45 @@
                     },
                     "422": {
                         "description": "Service has active bookings"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/owner/analytics": {
+            "get": {
+                "tags": [
+                    "Owner"
+                ],
+                "summary": "Owner analytics",
+                "description": "Returns aggregated analytics for the owner`s barbershop with selectable period (week/month/year)",
+                "operationId": "ownerAnalytics",
+                "parameters": [
+                    {
+                        "name": "period",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "week",
+                            "enum": [
+                                "week",
+                                "month",
+                                "year"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Analytics data"
+                    },
+                    "403": {
+                        "description": "Not an owner"
                     }
                 },
                 "security": [

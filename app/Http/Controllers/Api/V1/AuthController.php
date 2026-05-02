@@ -9,6 +9,7 @@ use App\Http\Requests\Api\V1\Auth\LoginRequest;
 use App\Http\Requests\Api\V1\Auth\RegisterRequest;
 use App\Http\Requests\Api\V1\Auth\ResendCodeRequest;
 use App\Http\Requests\Api\V1\Auth\ResetPasswordRequest;
+use App\Http\Requests\Api\V1\Auth\UpdateMeRequest;
 use App\Http\Requests\Api\V1\Auth\VerifyEmailRequest;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Attributes as OA;
@@ -424,5 +425,59 @@ class AuthController extends Controller
     public function resetPassword(ResetPasswordRequest $request, AuthServiceContract $service): JsonResponse
     {
         return $service->resetPassword($request);
+    }
+
+    /**
+     * @param UpdateMeRequest     $request
+     * @param AuthServiceContract $service
+     *
+     * @return JsonResponse
+     */
+    #[OA\Put(
+        path: '/auth/me',
+        operationId: 'authUpdateMe',
+        description: 'Updates name and/or phone of the authenticated user. Email is not editable.',
+        summary: 'Update my profile',
+        security: [['bearerAuth' => []]],
+        tags: ['Auth'],
+        requestBody: new OA\RequestBody(
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: 'name', type: 'string', example: 'Yeskendir'),
+                    new OA\Property(property: 'phone', type: 'string', example: '+7 701 234 5678'),
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'Profile updated'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ]
+    )]
+    public function updateMe(UpdateMeRequest $request, AuthServiceContract $service): JsonResponse
+    {
+        return $service->updateMe($request);
+    }
+
+    /**
+     * @param AuthServiceContract $service
+     *
+     * @return JsonResponse
+     */
+    #[OA\Get(
+        path: '/auth/me/reviews',
+        operationId: 'authMyReviews',
+        description: 'Returns paginated list of reviews left by the authenticated user',
+        summary: 'My reviews',
+        security: [['bearerAuth' => []]],
+        tags: ['Auth'],
+        responses: [
+            new OA\Response(response: 200, description: 'Reviews list'),
+            new OA\Response(response: 401, description: 'Unauthenticated'),
+        ]
+    )]
+    public function myReviews(AuthServiceContract $service): JsonResponse
+    {
+        return $service->myReviews();
     }
 }

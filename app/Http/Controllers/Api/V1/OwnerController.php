@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Contracts\Services\Http\Api\V1\OwnerServiceContract;
+use App\Http\Requests\Api\V1\Owner\AnalyticsRequest;
 use App\Http\Requests\Api\V1\Owner\BookingListRequest;
 use App\Http\Requests\Api\V1\Owner\CalendarRequest;
 use App\Http\Requests\Api\V1\Owner\ServiceStoreRequest;
@@ -330,5 +331,31 @@ class OwnerController extends Controller
     public function deleteService(int $id, OwnerServiceContract $service): JsonResponse
     {
         return $service->deleteService($id);
+    }
+
+    /**
+     * @param AnalyticsRequest     $request
+     * @param OwnerServiceContract $service
+     *
+     * @return JsonResponse
+     */
+    #[OA\Get(
+        path: '/owner/analytics',
+        operationId: 'ownerAnalytics',
+        description: 'Returns aggregated analytics for the owner`s barbershop with selectable period (week/month/year)',
+        summary: 'Owner analytics',
+        security: [['bearerAuth' => []]],
+        tags: ['Owner'],
+        parameters: [
+            new OA\Parameter(name: 'period', in: 'query', required: false, schema: new OA\Schema(type: 'string', enum: ['week', 'month', 'year'], default: 'week')),
+        ],
+        responses: [
+            new OA\Response(response: 200, description: 'Analytics data'),
+            new OA\Response(response: 403, description: 'Not an owner'),
+        ]
+    )]
+    public function analytics(AnalyticsRequest $request, OwnerServiceContract $service): JsonResponse
+    {
+        return $service->analytics($request);
     }
 }

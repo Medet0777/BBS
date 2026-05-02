@@ -3,6 +3,7 @@
 namespace App\Services\Http\Api\V1;
 
 use App\Contracts\Repositories\PendingRegistrationRepositoryContract;
+use App\Contracts\Repositories\ReviewRepositoryContract;
 use App\Contracts\Repositories\UserRepositoryContract;
 use App\Contracts\Services\Http\Api\V1\AuthServiceContract;
 use App\Dto\Services\Http\V1\Auth\GoogleLoginDto;
@@ -16,6 +17,7 @@ use App\Http\Requests\Api\V1\Auth\LoginRequest;
 use App\Http\Requests\Api\V1\Auth\RegisterRequest;
 use App\Http\Requests\Api\V1\Auth\ResendCodeRequest;
 use App\Http\Requests\Api\V1\Auth\ResetPasswordRequest;
+use App\Http\Requests\Api\V1\Auth\UpdateMeRequest;
 use App\Http\Requests\Api\V1\Auth\VerifyEmailRequest;
 use App\Http\Resources\Api\V1\Auth\TokenResource;
 use App\Http\Resources\Api\V1\Auth\UserResource;
@@ -39,6 +41,7 @@ class AuthService implements AuthServiceContract
     public function __construct(
         private readonly UserRepositoryContract                $userRepository,
         private readonly PendingRegistrationRepositoryContract $pendingRepository,
+        private readonly ReviewRepositoryContract              $reviewRepository,
     ) {
     }
 
@@ -246,5 +249,54 @@ class AuthService implements AuthServiceContract
         ]);
 
         return $this->success(null, 'Password reset successful');
+    }
+
+    /**
+     * @param UpdateMeRequest $request
+     *
+     * @return JsonResponse
+     */
+    public function updateMe(UpdateMeRequest $request): JsonResponse
+    {
+        $user = auth()->user();
+
+        $data = array_filter([
+            'name'  => $request->input('name'),
+            'phone' => $request->input('phone'),
+        ], fn ($value) => $value !== null);
+
+        if (empty($data)) {
+            return $this->success(new UserResource($user), 'Nothing to update');
+        }
+
+        $user = $this->userRepository->update($user, $data);
+
+        return $this->success(new UserResource($user), 'Profile updated');
+    }
+
+    /**
+     * @return JsonResponse
+     */
+    public function myReviews(): JsonResponse
+    {
+        $reviews = $this->reviewRepository->getUserReviewsPaginated(auth()->id(), 15);
+
+        $data = $reviews->getCollection()->map(fn ($review) => [
+            'id'                => $review->id,
+            'barbershop_name'   => $review->barbershop?->name,
+            'barbershop_slug'   => $review->barbershop?->slug,
+            'barbershop_image'  => $review->barbershop?->logo,
+            'rating'            => $review->rating,
+            'comment'           => $review->comment,
+            'created_at'        => $review->created_at,
+        ]);
+
+        return $this->success([
+            'data'         => $data,
+            'current_page' => $reviews->currentPage(),
+            'last_page'    => $reviews->lastPage(),
+            'per_page'     => $reviews->perPage(),
+            'total'        => $reviews->total(),
+        ]);
     }
 }
