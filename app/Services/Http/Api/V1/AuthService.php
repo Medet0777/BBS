@@ -25,8 +25,10 @@ use App\Traits\Services\Http\Api\V1\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use App\Mail\OtpCodeMail;
+use App\Services\Mail\BrevoMailService;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\View;
 use Google_Client;
 
 class AuthService implements AuthServiceContract
@@ -67,7 +69,7 @@ class AuthService implements AuthServiceContract
             'otp_expires_at' => Carbon::now()->addMinutes(5),
         ]);
 
-        Mail::to($dto->email)->queue(new OtpCodeMail($otpCode));
+        $this->sendOtpEmail($dto->email, $otpCode);
 
         return $this->success(null, 'Verification code sent to email');
     }
@@ -190,7 +192,7 @@ class AuthService implements AuthServiceContract
             'otp_expires_at' => Carbon::now()->addMinutes(5),
         ]);
 
-        Mail::to($dto->email)->queue(new OtpCodeMail($otpCode));
+        $this->sendOtpEmail($dto->email, $otpCode);
 
         return $this->success(null, 'Verification code resent');
     }
@@ -216,7 +218,7 @@ class AuthService implements AuthServiceContract
             'reset_otp_expires_at' => Carbon::now()->addMinutes(15),
         ]);
 
-        Mail::to($user->email)->queue(new OtpCodeMail($otpCode));
+        $this->sendOtpEmail($user->email, $otpCode);
 
         return $this->success(null, 'Password reset code sent to email');
     }
@@ -298,5 +300,18 @@ class AuthService implements AuthServiceContract
             'per_page'     => $reviews->perPage(),
             'total'        => $reviews->total(),
         ]);
+    }
+
+    /**
+     * @param string $email
+     * @param string $code
+     *
+     * @return void
+     */
+    private function sendOtpEmail(string $email, string $code): void
+    {
+        $html = View::make('mail.otp-code', ['otpCode' => $code])->render();
+
+        app(BrevoMailService::class)->send($email, '', 'BarberHub Verification Code', $html);
     }
 }

@@ -3,14 +3,14 @@
 namespace App\Jobs;
 
 use App\Enums\BookingStatus;
-use App\Mail\BookingReminderMail;
 use App\Models\Booking;
+use App\Services\Mail\BrevoMailService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\View;
 
 class SendBookingReminderJob implements ShouldQueue
 {
@@ -40,6 +40,13 @@ class SendBookingReminderJob implements ShouldQueue
             return;
         }
 
-        Mail::to($booking->user->email)->send(new BookingReminderMail($booking));
+        $html = View::make('mail.booking-reminder', ['booking' => $booking])->render();
+
+        app(BrevoMailService::class)->send(
+            $booking->user->email,
+            $booking->user->name ?? '',
+            'Reminder: Your booking is in 2 hours',
+            $html,
+        );
     }
 }
