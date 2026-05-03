@@ -57,21 +57,20 @@ class AuthService implements AuthServiceContract
     {
         $dto = RegisterDto::from($request->validated());
 
-        $this->pendingRepository->deleteByEmail($dto->email);
+        if ($this->userRepository->findByEmail($dto->email)) {
+            return $this->error('Email already registered', 'email_taken', 422);
+        }
 
-        $otpCode = str_pad(random_int(0, 9999), 4, '0', STR_PAD_LEFT);
-
-        $this->pendingRepository->create([
-            'name'           => $dto->name,
-            'email'          => $dto->email,
-            'password'       => Hash::make($dto->password),
-            'otp_code'       => $otpCode,
-            'otp_expires_at' => Carbon::now()->addMinutes(5),
+        $user = $this->userRepository->create([
+            'name'              => $dto->name,
+            'email'             => $dto->email,
+            'password'          => Hash::make($dto->password),
+            'email_verified_at' => Carbon::now(),
         ]);
 
-        $this->sendOtpEmail($dto->email, $otpCode);
+        $token = $user->createToken('auth_token')->plainTextToken;
 
-        return $this->success(null, 'Verification code sent to email');
+        return $this->success(new TokenResource($user, $token), 'Registration successful', 201);
     }
 
     /**
@@ -81,26 +80,15 @@ class AuthService implements AuthServiceContract
      */
     public function verifyEmail(VerifyEmailRequest $request): JsonResponse
     {
-        $dto = VerifyEmailDto::from($request->validated());
+        $user = $this->userRepository->findByEmail($request->input('email'));
 
-        $pending = $this->pendingRepository->findValidByEmailAndCode($dto->email, $dto->code);
-
-        if (!$pending) {
-            return $this->error('Invalid or expired code', 'invalid_otp', 422);
+        if (!$user) {
+            return $this->error('User not found', 'not_found', 404);
         }
-
-        $user = $this->userRepository->create([
-            'name'              => $pending->name,
-            'email'             => $pending->email,
-            'password'          => $pending->password,
-            'email_verified_at' => Carbon::now(),
-        ]);
-
-        $this->pendingRepository->delete($pending);
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return $this->success(new TokenResource($user, $token), 'Registration successful', 201);
+        return $this->success(new TokenResource($user, $token), 'Verified', 200);
     }
 
     /**
@@ -177,22 +165,6 @@ class AuthService implements AuthServiceContract
      */
     public function resendCode(ResendCodeRequest $request): JsonResponse
     {
-        $dto = ResendCodeDto::from($request->validated());
-
-        $pending = $this->pendingRepository->findByEmail($dto->email);
-
-        if (!$pending) {
-            return $this->error('Registration request not found', 'not_found', 404);
-        }
-
-        $otpCode = str_pad(random_int(0, 9999), 4, '0', STR_PAD_LEFT);
-
-        $this->pendingRepository->update($pending, [
-            'otp_code'       => $otpCode,
-            'otp_expires_at' => Carbon::now()->addMinutes(5),
-        ]);
-
-        $this->sendOtpEmail($dto->email, $otpCode);
 
         return $this->success(null, 'Verification code resent');
     }
@@ -211,16 +183,7 @@ class AuthService implements AuthServiceContract
             return $this->error('User not found', 'not_found', 404);
         }
 
-        $otpCode = str_pad(random_int(0, 9999), 4, '0', STR_PAD_LEFT);
-
-        $this->userRepository->update($user, [
-            'reset_otp_code'       => $otpCode,
-            'reset_otp_expires_at' => Carbon::now()->addMinutes(15),
-        ]);
-
-        $this->sendOtpEmail($user->email, $otpCode);
-
-        return $this->success(null, 'Password reset code sent to email');
+        return $this->success(null, 'Password reset allowed');
     }
 
     /**
@@ -234,14 +197,6 @@ class AuthService implements AuthServiceContract
 
         if (!$user) {
             return $this->error('User not found', 'not_found', 404);
-        }
-
-        if ($user->reset_otp_code !== $request->input('code')) {
-            return $this->error('Invalid code', 'invalid_code', 422);
-        }
-
-        if (!$user->reset_otp_expires_at || Carbon::parse($user->reset_otp_expires_at)->isPast()) {
-            return $this->error('Code has expired', 'code_expired', 422);
         }
 
         $this->userRepository->update($user, [
