@@ -26,7 +26,7 @@ class AuthController extends Controller
     #[OA\Post(
         path: '/auth/register',
         operationId: 'authRegister',
-        description: 'Creates a pending registration and sends OTP code to email',
+        description: 'Registers a new user and returns auth token immediately. Email verification is temporarily disabled.',
         summary: 'Register a new user',
         requestBody: new OA\RequestBody(
             required: true,
@@ -43,22 +43,24 @@ class AuthController extends Controller
         tags: ['Auth'],
         responses: [
             new OA\Response(
-                response: 200,
-                description: 'Verification code sent',
+                response: 201,
+                description: 'Registration successful',
                 content: new OA\JsonContent(properties: [
                     new OA\Property(property: 'success', type: 'boolean', example: true),
-                    new OA\Property(property: 'message', type: 'string', example: 'Verification code sent to email'),
-                    new OA\Property(property: 'data', type: 'string', example: null, nullable: true),
+                    new OA\Property(property: 'message', type: 'string', example: 'Registration successful'),
+                    new OA\Property(property: 'data', properties: [
+                        new OA\Property(property: 'user', properties: [
+                            new OA\Property(property: 'id', type: 'integer'),
+                            new OA\Property(property: 'name', type: 'string'),
+                            new OA\Property(property: 'email', type: 'string'),
+                        ], type: 'object'),
+                        new OA\Property(property: 'token', type: 'string', example: '1|abc123...'),
+                    ], type: 'object'),
                 ])
             ),
             new OA\Response(
                 response: 422,
-                description: 'Validation error',
-                content: new OA\JsonContent(properties: [
-                    new OA\Property(property: 'success', type: 'boolean', example: false),
-                    new OA\Property(property: 'message', type: 'string', example: 'The email has already been taken.'),
-                    new OA\Property(property: 'error', type: 'string', nullable: true),
-                ])
+                description: 'Validation error or email taken',
             ),
         ]
     )]
@@ -76,46 +78,22 @@ class AuthController extends Controller
     #[OA\Post(
         path: '/auth/verify-email',
         operationId: 'authVerifyEmail',
-        description: 'Verifies OTP code, creates user account and returns auth token',
-        summary: 'Verify email with OTP code',
+        deprecated: true,
+        description: 'DEPRECATED. Email verification is temporarily disabled. /auth/register now returns user + token directly. This endpoint is kept for compatibility and just returns token by email.',
+        summary: 'Verify email (deprecated)',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                required: ['email', 'code'],
+                required: ['email'],
                 properties: [
-                    new OA\Property(property: 'email', type: 'string', format: 'email', example: 'john@example.com'),
-                    new OA\Property(property: 'code', type: 'string', example: '1234', maxLength: 4, minLength: 4),
+                    new OA\Property(property: 'email', type: 'string', format: 'email'),
                 ]
             )
         ),
         tags: ['Auth'],
         responses: [
-            new OA\Response(
-                response: 201,
-                description: 'Registration successful',
-                content: new OA\JsonContent(properties: [
-                    new OA\Property(property: 'success', type: 'boolean', example: true),
-                    new OA\Property(property: 'message', type: 'string', example: 'Registration successful'),
-                    new OA\Property(property: 'data', properties: [
-                        new OA\Property(property: 'user', properties: [
-                            new OA\Property(property: 'id', type: 'integer', example: 1),
-                            new OA\Property(property: 'name', type: 'string', example: 'John Doe'),
-                            new OA\Property(property: 'email', type: 'string', example: 'john@example.com'),
-                            new OA\Property(property: 'email_verified_at', type: 'string', format: 'date-time', example: '2026-04-03T12:00:00.000000Z'),
-                        ], type: 'object'),
-                        new OA\Property(property: 'token', type: 'string', example: '1|abc123def456...'),
-                    ], type: 'object'),
-                ])
-            ),
-            new OA\Response(
-                response: 422,
-                description: 'Invalid or expired code',
-                content: new OA\JsonContent(properties: [
-                    new OA\Property(property: 'success', type: 'boolean', example: false),
-                    new OA\Property(property: 'message', type: 'string', example: 'Invalid or expired code'),
-                    new OA\Property(property: 'error', type: 'string', example: 'invalid_otp'),
-                ])
-            ),
+            new OA\Response(response: 200, description: 'Token returned'),
+            new OA\Response(response: 404, description: 'User not found'),
         ]
     )]
     public function verifyEmail(VerifyEmailRequest $request, AuthServiceContract $service): JsonResponse
@@ -322,37 +300,21 @@ class AuthController extends Controller
     #[OA\Post(
         path: '/auth/resend-code',
         operationId: 'authResendCode',
-        description: 'Generates new OTP code and sends it to email',
-        summary: 'Resend OTP code',
+        deprecated: true,
+        description: 'DEPRECATED. OTP is temporarily disabled. Endpoint kept for compatibility.',
+        summary: 'Resend OTP (deprecated)',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 required: ['email'],
                 properties: [
-                    new OA\Property(property: 'email', type: 'string', format: 'email', example: 'john@example.com'),
+                    new OA\Property(property: 'email', type: 'string', format: 'email'),
                 ]
             )
         ),
         tags: ['Auth'],
         responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Code resent',
-                content: new OA\JsonContent(properties: [
-                    new OA\Property(property: 'success', type: 'boolean', example: true),
-                    new OA\Property(property: 'message', type: 'string', example: 'Verification code resent'),
-                    new OA\Property(property: 'data', type: 'string', example: null, nullable: true),
-                ])
-            ),
-            new OA\Response(
-                response: 404,
-                description: 'Registration request not found',
-                content: new OA\JsonContent(properties: [
-                    new OA\Property(property: 'success', type: 'boolean', example: false),
-                    new OA\Property(property: 'message', type: 'string', example: 'Registration request not found'),
-                    new OA\Property(property: 'error', type: 'string', example: 'not_found'),
-                ])
-            ),
+            new OA\Response(response: 200, description: 'OK'),
         ]
     )]
     public function resendCode(ResendCodeRequest $request, AuthServiceContract $service): JsonResponse
@@ -369,22 +331,21 @@ class AuthController extends Controller
     #[OA\Post(
         path: '/auth/forgot-password',
         operationId: 'authForgotPassword',
-        description: 'Sends password reset OTP code to email',
+        description: 'Checks that user exists. OTP is temporarily disabled. Frontend should call /auth/reset-password right after.',
         summary: 'Forgot password',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
                 required: ['email'],
                 properties: [
-                    new OA\Property(property: 'email', type: 'string', format: 'email', example: 'user@example.com'),
+                    new OA\Property(property: 'email', type: 'string', format: 'email'),
                 ]
             )
         ),
         tags: ['Auth'],
         responses: [
-            new OA\Response(response: 200, description: 'Reset code sent'),
+            new OA\Response(response: 200, description: 'Password reset allowed'),
             new OA\Response(response: 404, description: 'User not found'),
-            new OA\Response(response: 422, description: 'Validation error'),
         ]
     )]
     public function forgotPassword(ForgotPasswordRequest $request, AuthServiceContract $service): JsonResponse
@@ -401,15 +362,14 @@ class AuthController extends Controller
     #[OA\Post(
         path: '/auth/reset-password',
         operationId: 'authResetPassword',
-        description: 'Resets password using OTP code sent to email',
+        description: 'Resets password by email and new password. OTP code is temporarily disabled.',
         summary: 'Reset password',
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                required: ['email', 'code', 'password', 'password_confirmation'],
+                required: ['email', 'password', 'password_confirmation'],
                 properties: [
                     new OA\Property(property: 'email', type: 'string', format: 'email'),
-                    new OA\Property(property: 'code', type: 'string', example: '1234', maxLength: 4, minLength: 4),
                     new OA\Property(property: 'password', type: 'string', format: 'password', minLength: 8),
                     new OA\Property(property: 'password_confirmation', type: 'string', format: 'password'),
                 ]

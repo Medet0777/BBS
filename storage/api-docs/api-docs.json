@@ -21,7 +21,7 @@
                     "Auth"
                 ],
                 "summary": "Register a new user",
-                "description": "Creates a pending registration and sends OTP code to email",
+                "description": "Registers a new user and returns auth token immediately. Email verification is temporarily disabled.",
                 "operationId": "authRegister",
                 "requestBody": {
                     "required": true,
@@ -62,94 +62,6 @@
                     }
                 },
                 "responses": {
-                    "200": {
-                        "description": "Verification code sent",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Verification code sent to email"
-                                        },
-                                        "data": {
-                                            "type": "string",
-                                            "example": null,
-                                            "nullable": true
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": false
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "The email has already been taken."
-                                        },
-                                        "error": {
-                                            "type": "string",
-                                            "nullable": true
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/verify-email": {
-            "post": {
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Verify email with OTP code",
-                "description": "Verifies OTP code, creates user account and returns auth token",
-                "operationId": "authVerifyEmail",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "email",
-                                    "code"
-                                ],
-                                "properties": {
-                                    "email": {
-                                        "type": "string",
-                                        "format": "email",
-                                        "example": "john@example.com"
-                                    },
-                                    "code": {
-                                        "type": "string",
-                                        "example": "1234",
-                                        "maxLength": 4,
-                                        "minLength": 4
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
                     "201": {
                         "description": "Registration successful",
                         "content": {
@@ -169,28 +81,20 @@
                                                 "user": {
                                                     "properties": {
                                                         "id": {
-                                                            "type": "integer",
-                                                            "example": 1
+                                                            "type": "integer"
                                                         },
                                                         "name": {
-                                                            "type": "string",
-                                                            "example": "John Doe"
+                                                            "type": "string"
                                                         },
                                                         "email": {
-                                                            "type": "string",
-                                                            "example": "john@example.com"
-                                                        },
-                                                        "email_verified_at": {
-                                                            "type": "string",
-                                                            "format": "date-time",
-                                                            "example": "2026-04-03T12:00:00.000000Z"
+                                                            "type": "string"
                                                         }
                                                     },
                                                     "type": "object"
                                                 },
                                                 "token": {
                                                     "type": "string",
-                                                    "example": "1|abc123def456..."
+                                                    "example": "1|abc123..."
                                                 }
                                             },
                                             "type": "object"
@@ -202,30 +106,47 @@
                         }
                     },
                     "422": {
-                        "description": "Invalid or expired code",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": false
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Invalid or expired code"
-                                        },
-                                        "error": {
-                                            "type": "string",
-                                            "example": "invalid_otp"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
+                        "description": "Validation error or email taken"
+                    }
+                }
+            }
+        },
+        "/auth/verify-email": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Verify email (deprecated)",
+                "description": "DEPRECATED. Email verification is temporarily disabled. /auth/register now returns user + token directly. This endpoint is kept for compatibility and just returns token by email.",
+                "operationId": "authVerifyEmail",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    }
+                                },
+                                "type": "object"
                             }
                         }
                     }
-                }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Token returned"
+                    },
+                    "404": {
+                        "description": "User not found"
+                    }
+                },
+                "deprecated": true
             }
         },
         "/auth/login": {
@@ -637,8 +558,8 @@
                 "tags": [
                     "Auth"
                 ],
-                "summary": "Resend OTP code",
-                "description": "Generates new OTP code and sends it to email",
+                "summary": "Resend OTP (deprecated)",
+                "description": "DEPRECATED. OTP is temporarily disabled. Endpoint kept for compatibility.",
                 "operationId": "authResendCode",
                 "requestBody": {
                     "required": true,
@@ -651,8 +572,7 @@
                                 "properties": {
                                     "email": {
                                         "type": "string",
-                                        "format": "email",
-                                        "example": "john@example.com"
+                                        "format": "email"
                                     }
                                 },
                                 "type": "object"
@@ -662,55 +582,10 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Code resent",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Verification code resent"
-                                        },
-                                        "data": {
-                                            "type": "string",
-                                            "example": null,
-                                            "nullable": true
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Registration request not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": false
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Registration request not found"
-                                        },
-                                        "error": {
-                                            "type": "string",
-                                            "example": "not_found"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "OK"
                     }
-                }
+                },
+                "deprecated": true
             }
         },
         "/auth/forgot-password": {
@@ -719,7 +594,7 @@
                     "Auth"
                 ],
                 "summary": "Forgot password",
-                "description": "Sends password reset OTP code to email",
+                "description": "Checks that user exists. OTP is temporarily disabled. Frontend should call /auth/reset-password right after.",
                 "operationId": "authForgotPassword",
                 "requestBody": {
                     "required": true,
@@ -732,8 +607,7 @@
                                 "properties": {
                                     "email": {
                                         "type": "string",
-                                        "format": "email",
-                                        "example": "user@example.com"
+                                        "format": "email"
                                     }
                                 },
                                 "type": "object"
@@ -743,13 +617,10 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Reset code sent"
+                        "description": "Password reset allowed"
                     },
                     "404": {
                         "description": "User not found"
-                    },
-                    "422": {
-                        "description": "Validation error"
                     }
                 }
             }
@@ -760,7 +631,7 @@
                     "Auth"
                 ],
                 "summary": "Reset password",
-                "description": "Resets password using OTP code sent to email",
+                "description": "Resets password by email and new password. OTP code is temporarily disabled.",
                 "operationId": "authResetPassword",
                 "requestBody": {
                     "required": true,
@@ -769,7 +640,6 @@
                             "schema": {
                                 "required": [
                                     "email",
-                                    "code",
                                     "password",
                                     "password_confirmation"
                                 ],
@@ -777,12 +647,6 @@
                                     "email": {
                                         "type": "string",
                                         "format": "email"
-                                    },
-                                    "code": {
-                                        "type": "string",
-                                        "example": "1234",
-                                        "maxLength": 4,
-                                        "minLength": 4
                                     },
                                     "password": {
                                         "type": "string",
